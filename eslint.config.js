@@ -21,6 +21,10 @@ export default [
     languageOptions: { globals: { ...globals['shared-node-browser'] } },
   },
   {
+    files: ['src/sw.js'],
+    languageOptions: { globals: { ...globals.serviceworker } },
+  },
+  {
     rules: {
       'no-eval': 'error',
       'no-implied-eval': 'error',

@@ -19,6 +19,8 @@
  * @property {(id: string) => Promise<Mount>} loadScreen
  * @property {(root: HTMLElement, from: string | null) => void} renderHome
  *   `from` is the screen the user just left, so home can put focus back on its card.
+ * @property {(root: HTMLElement, id: string) => void} renderLoadError
+ *   Shown when a screen's code can't be downloaded, instead of leaving the old screen up.
  */
 
 /**
@@ -46,7 +48,7 @@ export function hrefFor(id) {
  * @param {RouterOptions} options
  * @returns {void}
  */
-export function startRouter({ root, routes, loadScreen, renderHome }) {
+export function startRouter({ root, routes, loadScreen, renderHome, renderLoadError }) {
   /** @type {Unmount | null} */
   let unmount = null;
   /** @type {string | null} */
@@ -67,7 +69,16 @@ export function startRouter({ root, routes, loadScreen, renderHome }) {
       renderHome(root, from);
       return;
     }
-    const mount = await loadScreen(id);
+    let mount;
+    try {
+      mount = await loadScreen(id);
+    } catch (error) {
+      if (ticket !== navigation) return;
+      // Usually the network is down and the service worker hasn't cached this screen yet.
+      console.error(`Could not load the ${id} screen`, error);
+      renderLoadError(root, id);
+      return;
+    }
     if (ticket !== navigation) return;
     unmount = mount(root);
   }

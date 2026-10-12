@@ -10,11 +10,17 @@ export default defineConfig({
   projects: [
     {
       name: 'app',
-      testIgnore: '**/components.spec.js',
+      testIgnore: ['**/components.spec.js', '**/touch.spec.js'],
       use: {
         ...devices['Desktop Chrome'],
         baseURL: `http://localhost:${PREVIEW_PORT}/PDF-Toolkit/`,
       },
+    },
+    {
+      // A phone used with a finger only (CLAUDE.md §6).
+      name: 'touch',
+      testMatch: '**/touch.spec.js',
+      use: { ...devices['Pixel 7'], baseURL: `http://localhost:${PREVIEW_PORT}/PDF-Toolkit/` },
     },
     {
       name: 'components',

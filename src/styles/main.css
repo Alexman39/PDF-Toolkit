@@ -4,6 +4,8 @@
   --text: #1a1a1e;
   --text-muted: #55565e;
   --border: #d9d9de;
+  /* The edge of a control that has no other outline (text inputs): 3:1 for WCAG 1.4.11. */
+  --border-strong: #85868f;
   --accent: #2f5bd3;
   --focus: #2f5bd3;
   --danger: #b3261e;
@@ -31,6 +33,7 @@
     --text: #ececf0;
     --text-muted: #a4a5ad;
     --border: #34343c;
+    --border-strong: #74757e;
     --accent: #8aa8ff;
     --focus: #8aa8ff;
     --danger: #ffb4ab;
@@ -122,6 +125,58 @@ main:focus {
 }
 
 .tool-card__description {
+  color: var(--text-muted);
+}
+
+/* Home: questions */
+
+.faq {
+  margin-top: calc(var(--space) * 2);
+}
+
+.faq__title {
+  margin: 0 0 8px;
+  font-size: 1.25rem;
+}
+
+.faq__item {
+  border-bottom: 1px solid var(--border);
+}
+
+.faq__item summary {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 8px 0;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.faq__item summary:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* display: flex hides the native marker in some browsers, so draw our own. The `/ ''` gives it
+   empty alt text, so screen readers don't read the arrow as part of the question. */
+.faq__item summary::before {
+  content: '▸';
+  content: '▸' / '';
+  margin-right: 8px;
+  color: var(--text-muted);
+}
+
+.faq__item[open] summary::before {
+  content: '▾';
+  content: '▾' / '';
+}
+
+.faq__item summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq__item p {
+  margin: 0 0 var(--space);
   color: var(--text-muted);
 }
 

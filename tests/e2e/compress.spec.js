@@ -135,28 +135,33 @@ test('a text PDF gets an honest "not smaller" and the original back', async ({ p
   expect(await pageTexts(anyway.bytes)).toEqual([undefined, undefined, undefined]);
 });
 
-test('renders on the main thread when the worker has no OffscreenCanvas', async ({ page }) => {
-  // Removes OffscreenCanvas inside the PDF worker only, as in browsers without support. The
-  // check runs on the first message, after this line.
-  await page.route(/\/assets\/pdf\.worker-[\w-]+\.js$/, async (route) => {
-    const response = await route.fetch();
-    await route.fulfill({
-      response,
-      body: `globalThis.OffscreenCanvas = undefined;\n${await response.text()}`,
-    });
-  });
-  const mainThreadRenderer = [];
-  page.on('request', (request) => {
-    if (/\/rasterise-[\w-]+\.js$/.test(request.url())) mainThreadRenderer.push(request.url());
-  });
-  const original = await fixture('scanned.pdf');
-  await open(page, 'scanned.pdf');
-  await chooseStrong(page, 72);
+test.describe('without the service worker', () => {
+  // page.route() can't rewrite responses the service worker answers from its cache.
+  test.use({ serviceWorkers: 'block' });
 
-  const { bytes } = await download(page, () => compressButton(page).click());
-  expect(mainThreadRenderer).toHaveLength(1);
-  expect(bytes.length).toBeLessThan(original.length * 0.6);
-  expect(await readPages(bytes)).toHaveLength(3);
+  test('renders on the main thread when the worker has no OffscreenCanvas', async ({ page }) => {
+    // Removes OffscreenCanvas inside the PDF worker only, as in browsers without support. The
+    // check runs on the first message, after this line.
+    await page.route(/\/assets\/pdf\.worker-[\w-]+\.js$/, async (route) => {
+      const response = await route.fetch();
+      await route.fulfill({
+        response,
+        body: `globalThis.OffscreenCanvas = undefined;\n${await response.text()}`,
+      });
+    });
+    const mainThreadRenderer = [];
+    page.on('request', (request) => {
+      if (/\/rasterise-[\w-]+\.js$/.test(request.url())) mainThreadRenderer.push(request.url());
+    });
+    const original = await fixture('scanned.pdf');
+    await open(page, 'scanned.pdf');
+    await chooseStrong(page, 72);
+
+    const { bytes } = await download(page, () => compressButton(page).click());
+    expect(mainThreadRenderer).toHaveLength(1);
+    expect(bytes.length).toBeLessThan(original.length * 0.6);
+    expect(await readPages(bytes)).toHaveLength(3);
+  });
 });
 
 test('strong mode is unavailable for JPEG 2000 images, with the reason', async ({ page }) => {

@@ -44,7 +44,7 @@ test('Reset undoes every pending rotation', async ({ page }) => {
   await addFiles(page, [{ name: 'a.pdf', buffer: await fixture('three-pages.pdf') }]);
   await page.getByRole('button', { name: 'Rotate all pages right' }).click();
   await expect(page.locator('.thumbnail__frame[data-rotation="90"]')).toHaveCount(3);
-  await page.getByRole('button', { name: 'Undo all rotations' }).click();
+  await page.getByRole('button', { name: 'Reset all rotations' }).click();
   await expect(page.locator('.thumbnail__frame[data-rotation="0"]')).toHaveCount(3);
   await expect(page.getByRole('button', { name: 'Save rotated PDF' })).toBeDisabled();
 });
@@ -67,6 +67,8 @@ for (const [fixtureName, message] of [
     await expect(page.getByRole('alert')).toHaveText(`bad.pdf: ${message}`);
     await expect(page.getByRole('list', { name: 'Pages' })).toBeHidden();
     await expect(page.getByText('Drop a PDF here')).toBeVisible();
+    // Back on the picker, ready to choose another file, rather than lost on <body>.
+    await expect(page.locator('input[type="file"]')).toBeFocused();
   });
 }
 

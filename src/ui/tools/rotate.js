@@ -74,7 +74,8 @@ export function mountRotate(root) {
         ariaLabel: 'Rotate all pages 180 degrees',
         onClick: () => rotateAll(180),
       }),
-      createButton({ text: 'Reset', ariaLabel: 'Undo all rotations', onClick: resetRotations }),
+      // The name starts with the visible word, so voice control ("click Reset") finds it.
+      createButton({ text: 'Reset', ariaLabel: 'Reset all rotations', onClick: resetRotations }),
     );
 
     const grid = createThumbnailGrid({

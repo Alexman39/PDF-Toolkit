@@ -95,6 +95,7 @@ export function createDocumentTool(body, { onOpen, onClose, open: openOptions })
     dropzone.element.inert = true;
     progress.start(`Opening ${file.name}…`);
     focusCancel();
+    let opened = false;
     try {
       const doc = await openDocument(file, signal, openOptions);
       current = { file, doc };
@@ -107,15 +108,17 @@ export function createDocumentTool(body, { onOpen, onClose, open: openOptions })
       workspace.hidden = false;
       fileName.focus();
       announce(`${file.name} opened, ${plural(doc.pageCount, 'page')}.`);
+      opened = true;
     } catch (error) {
       if (signal.aborted) status.showInfo('Cancelled.');
       else status.showError(userMessageFor(error, file.name));
-      fileInput()?.focus();
     } finally {
       if (controller?.signal === signal) controller = null;
       dropzone.element.inert = false;
       progress.hide();
     }
+    // Only after `finally`: an inert dropzone can't take focus, and it would fall to <body>.
+    if (!opened) fileInput()?.focus();
   }
 
   /** @type {DocumentTool['run']} */

@@ -47,3 +47,30 @@ test('a deep link opens the tool directly, and an unknown one shows home', async
   await page.goto('./#/nope');
   await expect(page.getByRole('list', { name: 'Tools' })).toBeVisible();
 });
+
+test('the FAQ answers open from the keyboard', async ({ page }) => {
+  await page.goto('./');
+  const question = page.getByText('Are my files uploaded anywhere?');
+  const answer = page.getByText(/Every tool runs inside your browser/);
+  await expect(answer).toBeHidden();
+  await question.focus();
+  await page.keyboard.press('Enter');
+  await expect(answer).toBeVisible();
+});
+
+test.describe('when a screen cannot be downloaded', () => {
+  // Otherwise the service worker could answer from its cache, out of page.route()'s reach.
+  test.use({ serviceWorkers: 'block' });
+
+  test('shows an error with Try again instead of a blank page', async ({ page }) => {
+    await page.goto('./');
+    await page.route('**/assets/merge-*.js', (route) => route.abort('internetdisconnected'));
+    await page.getByRole('link', { name: /^Merge/ }).click();
+    await expect(page.getByRole('heading', { name: 'Merge', level: 2 })).toBeFocused();
+    await expect(page.getByRole('alert')).toContainText("The Merge tool couldn't be loaded.");
+
+    await page.unroute('**/assets/merge-*.js');
+    await page.getByRole('button', { name: 'Try again' }).click();
+    await expect(page.getByText('Drop PDFs here')).toBeVisible();
+  });
+});

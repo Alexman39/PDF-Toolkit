@@ -362,8 +362,12 @@
 
 .thumbnail-grid {
   display: grid;
-  /* 140px matches THUMBNAIL_WIDTH in thumbnailGrid.js; two columns even on a 320px phone. */
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  /* 140px matches THUMBNAIL_WIDTH in thumbnailGrid.js. The min() lets columns shrink to half
+     the width, so a 320px phone still gets two columns instead of one huge tile per row. */
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(min(140px, calc((100% - var(--space)) / 2)), 1fr)
+  );
   gap: var(--space);
   margin: 0;
   padding: 0;
@@ -525,7 +529,7 @@
 .field__input {
   min-height: 44px;
   padding: 0 12px;
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-strong);
   border-radius: 8px;
   background: var(--surface);
   color: inherit;
@@ -571,6 +575,8 @@
 }
 
 .checkbox input {
+  /* A long label would otherwise squeeze the box on narrow screens. */
+  flex-shrink: 0;
   width: 18px;
   height: 18px;
   margin: 0;
