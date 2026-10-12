@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { EncryptedPdfError } from '../../src/core/errors.js';
 import { parsePageRanges } from '../../src/core/pageRanges.js';
-import { planSplit, splitOutputName, splitPdf } from '../../src/core/split.js';
+import { splitPdf } from '../../src/core/split.js';
+import { planSplit } from '../../src/core/splitPlan.js';
 import { fixture, labels, pageTexts, readPages } from './helpers/pdf.js';
 
 const ten = fixture('ten-pages.pdf');
@@ -117,17 +118,5 @@ describe('splitPdf', () => {
     await expect(splitPdf(fixture('encrypted.pdf'), { type: 'perPage' })).rejects.toBeInstanceOf(
       EncryptedPdfError,
     );
-  });
-});
-
-describe('splitOutputName', () => {
-  it.each([
-    ['report.pdf', 'report_p1-3.pdf'],
-    ['Report.PDF', 'Report_p1-3.pdf'],
-    ['my.notes.pdf', 'my.notes_p1-3.pdf'],
-    ['no-extension', 'no-extension_p1-3.pdf'],
-    ['.pdf', 'document_p1-3.pdf'],
-  ])('%s → %s', (original, expected) => {
-    expect(splitOutputName(original, 'p1-3')).toBe(expected);
   });
 });

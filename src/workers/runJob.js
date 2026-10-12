@@ -6,6 +6,7 @@ import { loadPdf } from '../core/loadPdf.js';
 import { mergePdfs } from '../core/merge.js';
 import { rotatePages } from '../core/rotate.js';
 import { splitPdf } from '../core/split.js';
+import { packageSplitOutputs } from '../core/zip.js';
 import { collectTransferables, serializeError } from './messages.js';
 
 /** @typedef {import('./messages.js').PdfOperation} PdfOperation */
@@ -32,8 +33,10 @@ const OPERATIONS = {
   async merge({ inputs }, onProgress) {
     return { bytes: await mergePdfs(inputs, { onProgress }) };
   },
-  async split({ bytes, mode }, onProgress) {
-    return { outputs: await splitPdf(bytes, mode, { onProgress }) };
+  // Zipped here rather than on the main thread: hashing (CRC-32) every byte of a large split
+  // would otherwise freeze the page.
+  async split({ bytes, mode, fileName }, onProgress) {
+    return packageSplitOutputs(await splitPdf(bytes, mode, { onProgress }), fileName);
   },
   async rotate({ bytes, deltas }) {
     return { bytes: await rotatePages(bytes, deltas) };

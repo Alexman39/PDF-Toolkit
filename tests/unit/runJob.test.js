@@ -43,16 +43,29 @@ describe('runJob', () => {
     expect(transfer).toEqual([message.result.bytes.buffer]);
   });
 
-  it('splits and transfers every output buffer', async () => {
+  it('splits into a zip and transfers it', async () => {
     const posted = await run('split', {
       bytes: fixture('ten-pages.pdf'),
       mode: { type: 'everyN', n: 4 },
+      fileName: 'ten.pdf',
     });
     const progress = posted.filter((p) => p.message.type === 'progress');
     expect(progress.map((p) => p.message.done)).toEqual([1, 2, 3]);
     const { message, transfer } = posted.at(-1);
-    expect(message.result.outputs.map((o) => o.label)).toEqual(['p1-4', 'p5-8', 'p9-10']);
-    expect(transfer).toHaveLength(3);
+    expect(message.result.name).toBe('ten_split.zip');
+    expect(message.result.names).toEqual(['ten_p1-4.pdf', 'ten_p5-8.pdf', 'ten_p9-10.pdf']);
+    expect(transfer).toEqual([message.result.bytes.buffer]);
+  });
+
+  it('returns a lone split output as a PDF', async () => {
+    const posted = await run('split', {
+      bytes: fixture('ten-pages.pdf'),
+      mode: { type: 'selected', pageIndexes: [4, 1] },
+      fileName: 'ten.pdf',
+    });
+    const { result } = posted.at(-1).message;
+    expect(result.name).toBe('ten_p2_5.pdf');
+    expect(await pageTexts(result.bytes)).toEqual(['Page 2', 'Page 5']);
   });
 
   it('rotates', async () => {
