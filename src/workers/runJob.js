@@ -2,6 +2,7 @@
 // Free of `self` so Node tests can call it directly.
 
 import { optimisePdf } from '../core/compress.js';
+import { loadPdf } from '../core/loadPdf.js';
 import { mergePdfs } from '../core/merge.js';
 import { rotatePages } from '../core/rotate.js';
 import { splitPdf } from '../core/split.js';
@@ -21,6 +22,13 @@ import { collectTransferables, serializeError } from './messages.js';
 
 /** @type {Record<PdfOperation, (payload: any, onProgress: ProgressCallback) => Promise<object>>} */
 const OPERATIONS = {
+  // Run when a file is picked, so encrypted or corrupt files are reported before the user
+  // sets anything up. pdf.js (thumbnails) opens some files pdf-lib refuses, e.g. ones with
+  // only an owner password, so its opinion isn't enough.
+  async inspect({ bytes }) {
+    const doc = await loadPdf(bytes);
+    return { pageCount: doc.getPageCount() };
+  },
   async merge({ inputs }, onProgress) {
     return { bytes: await mergePdfs(inputs, { onProgress }) };
   },

@@ -1,13 +1,33 @@
 import { PDFDocument, PDFName, PDFNumber } from 'pdf-lib';
 import { describe, expect, it } from 'vitest';
 import { EncryptedPdfError } from '../../src/core/errors.js';
-import { normaliseRotation, rotatePages } from '../../src/core/rotate.js';
+import { rotatePages } from '../../src/core/rotate.js';
+import { addRotation, normaliseRotation } from '../../src/core/rotation.js';
 import { fixture, labels, readPages } from './helpers/pdf.js';
 
 const three = fixture('three-pages.pdf');
 const rotated = fixture('rotated.pdf'); // page 2 already has /Rotate 90
 
 const rotationsOf = async (bytes) => (await readPages(bytes)).map((page) => page.rotation);
+
+describe('addRotation', () => {
+  it('adds to the pending rotation of the given pages and normalises', () => {
+    expect(addRotation({}, [0, 2], 90)).toEqual({ 0: 90, 2: 90 });
+    expect(addRotation({ 0: 270 }, [0], 180)).toEqual({ 0: 90 });
+    expect(addRotation({}, [1], -90)).toEqual({ 1: 270 });
+  });
+
+  it('drops pages that come back to upright, so {} means nothing to save', () => {
+    expect(addRotation({ 0: 90, 1: 90 }, [0], -90)).toEqual({ 1: 90 });
+    expect(addRotation({ 0: 180 }, [0], 180)).toEqual({});
+  });
+
+  it('does not change its input', () => {
+    const deltas = Object.freeze({ 0: 90 });
+    addRotation(deltas, [0], 90);
+    expect(deltas).toEqual({ 0: 90 });
+  });
+});
 
 describe('normaliseRotation', () => {
   it.each([

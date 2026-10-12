@@ -16,6 +16,18 @@ async function run(op, payload) {
 }
 
 describe('runJob', () => {
+  it('inspects a file and reports its page count', async () => {
+    const posted = await run('inspect', { bytes: fixture('ten-pages.pdf') });
+    expect(posted).toEqual([
+      { message: { id: 7, type: 'result', result: { pageCount: 10 } }, transfer: [] },
+    ]);
+  });
+
+  it('reports an encrypted file from inspect as a typed error', async () => {
+    const posted = await run('inspect', { bytes: fixture('encrypted.pdf') });
+    expect(posted.at(-1).message.error.code).toBe('ENCRYPTED');
+  });
+
   it('merges and reports progress once per file', async () => {
     const posted = await run('merge', {
       inputs: [{ bytes: fixture('three-pages.pdf') }, { bytes: fixture('ten-pages.pdf') }],

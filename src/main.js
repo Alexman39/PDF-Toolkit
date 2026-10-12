@@ -37,9 +37,7 @@ const TOOLS = [
     id: 'rotate',
     title: 'Rotate',
     description: 'Turn single pages or the whole document.',
-    load() {
-      return placeholder(this);
-    },
+    load: async () => (await import('./ui/tools/rotate.js')).mountRotate,
   },
   {
     id: 'compress',

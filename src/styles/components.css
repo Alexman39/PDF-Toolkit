@@ -33,6 +33,18 @@
   background: transparent;
 }
 
+.icon-button svg {
+  width: 20px;
+  height: 20px;
+}
+
+.button svg {
+  width: 18px;
+  height: 18px;
+  margin-right: 6px;
+  vertical-align: -3px;
+}
+
 .icon-button:hover:not(:disabled) {
   border-color: var(--border);
 }
@@ -306,4 +318,128 @@
   flex-wrap: wrap;
   gap: 8px;
   margin-top: 12px;
+}
+
+/* Workspace: a tool screen once a file is open */
+
+.workspace[hidden],
+.dropzone[hidden] {
+  display: none;
+}
+
+.workspace__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px var(--space);
+}
+
+.workspace__file {
+  min-width: 0;
+  margin: 0;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.workspace__file:focus {
+  outline: none;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: var(--space) 0;
+}
+
+.toolbar__label {
+  color: var(--text-muted);
+}
+
+/* Thumbnail grid */
+
+.thumbnail-grid {
+  display: grid;
+  /* 140px matches THUMBNAIL_WIDTH in thumbnailGrid.js; two columns even on a 320px phone. */
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: var(--space);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.thumbnail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+/* Square, so a page turned 90° still fits without the grid jumping. */
+.thumbnail__frame {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 4px;
+  /* Tinted, so white pages stand out from the white tile in the light theme. */
+  background: var(--bg);
+}
+
+/* Absolutely positioned so max-width/max-height resolve against the square frame; as a grid
+   item the percentages would resolve against the image's own row and it would overflow. */
+.thumbnail__image {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  max-width: calc(100% - 12px);
+  max-height: calc(100% - 12px);
+  box-shadow: 0 1px 4px rgb(0 0 0 / 0.25);
+  /* Pages are white whatever the theme, like paper. */
+  background: #fff;
+}
+
+.thumbnail__frame[data-rotation='90'] .thumbnail__image {
+  transform: rotate(90deg);
+}
+
+.thumbnail__frame[data-rotation='180'] .thumbnail__image {
+  transform: rotate(180deg);
+}
+
+.thumbnail__frame[data-rotation='270'] .thumbnail__image {
+  transform: rotate(270deg);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .thumbnail__image {
+    transition: transform 150ms ease-out;
+  }
+}
+
+.thumbnail__unavailable {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+.thumbnail__caption {
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+.thumbnail__badge {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.thumbnail__controls {
+  display: flex;
+  gap: 4px;
 }

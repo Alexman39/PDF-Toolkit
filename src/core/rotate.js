@@ -1,20 +1,7 @@
 import { degrees } from 'pdf-lib';
 import { loadPdf } from './loadPdf.js';
 import { assertPageIndexes } from './pageRanges.js';
-
-/**
- * Maps any multiple of 90 onto the four values PDF viewers understand: 0, 90, 180, 270.
- * @param {number} angle  Degrees, may be negative or above 360.
- * @returns {number}
- * @throws {RangeError} When `angle` is not a whole multiple of 90.
- */
-export function normaliseRotation(angle) {
-  if (!Number.isInteger(angle) || angle % 90 !== 0) {
-    throw new RangeError(`Rotation must be a multiple of 90, got ${angle}`);
-  }
-  // JavaScript's % keeps the sign (-90 % 360 === -90), so shift into the positive range.
-  return ((angle % 360) + 360) % 360;
-}
+import { normaliseRotation } from './rotation.js';
 
 /**
  * Rotates pages by adding to their current rotation. Only the /Rotate entry changes, so page

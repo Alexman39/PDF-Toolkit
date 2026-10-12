@@ -57,3 +57,19 @@ export async function trackFrameGaps(page) {
     };
   });
 }
+
+/**
+ * Collects CSP violations, so a test fails when something (e.g. pdf.js) tries what the policy
+ * forbids instead of the app silently degrading. Call before page.goto().
+ * @param {import('@playwright/test').Page} page
+ * @returns {Promise<() => Promise<string[]>>}  Reads the violations so far.
+ */
+export async function trackCspViolations(page) {
+  await page.addInitScript(() => {
+    window.cspViolations = [];
+    document.addEventListener('securitypolicyviolation', (event) => {
+      window.cspViolations.push(`${event.violatedDirective} ${event.blockedURI}`);
+    });
+  });
+  return () => page.evaluate(() => window.cspViolations);
+}
