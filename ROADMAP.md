@@ -18,7 +18,7 @@ Kickoff prompt:
 
 - [x] `npm run dev`, `npm test`, `npm run test:e2e`, `npm run lint` all work
 - [x] Home page shows 4 placeholder tool cards
-- [ ] Repo pushed to GitHub
+- [x] Repo pushed to GitHub
 
 ---
 
@@ -119,4 +119,4 @@ Kickoff prompt:
 - Add page numbers or a watermark
 
 ## Status
-Current phase: **0**
+Current phase: **1**

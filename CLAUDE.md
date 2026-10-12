@@ -140,3 +140,4 @@ npm run lint
 
 ## 10. Decisions log
 - 2026-10-12: pdf-lib for writing, pdf.js for rendering. Compression offered as lossless vs lossy, with an explicit warning that the lossy mode removes selectable text.
+- 2026-10-12: CSP meta tag is injected at build time only (Vite plugin), because dev hot reload needs a WebSocket. E2E tests run against `vite preview` of the production build. Prettier ignores `*.md` to protect CLAUDE.md and ROADMAP.md.
