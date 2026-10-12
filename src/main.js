@@ -23,9 +23,7 @@ const TOOLS = [
     id: 'merge',
     title: 'Merge',
     description: 'Combine several PDFs into one.',
-    load() {
-      return placeholder(this);
-    },
+    load: async () => (await import('./ui/tools/merge.js')).mountMerge,
   },
   {
     id: 'split',

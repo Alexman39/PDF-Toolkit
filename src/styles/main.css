@@ -8,6 +8,8 @@
   --focus: #2f5bd3;
   --danger: #b3261e;
   --danger-surface: #fdecea;
+  --warning: #8a5a00;
+  --warning-surface: #fff4dc;
   --on-accent: #ffffff;
   --shadow: 0 6px 24px rgb(0 0 0 / 0.15);
   --radius: 12px;
@@ -33,6 +35,8 @@
     --focus: #8aa8ff;
     --danger: #ffb4ab;
     --danger-surface: #3a1d1b;
+    --warning: #f0c060;
+    --warning-surface: #33290f;
     --on-accent: #10131c;
     --shadow: 0 6px 24px rgb(0 0 0 / 0.5);
   }

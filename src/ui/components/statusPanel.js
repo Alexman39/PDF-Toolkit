@@ -12,13 +12,14 @@ import { announce } from './announce.js';
  * @property {HTMLElement} element
  * @property {(message: string, actions?: StatusAction[]) => void} showSuccess
  * @property {(message: string, actions?: StatusAction[]) => void} showError
+ * @property {(message: string, actions?: StatusAction[]) => void} showInfo
+ *   Neither success nor failure, e.g. "cancelled".
  * @property {() => void} clear
  */
 
 /**
- * The success and error states of a tool screen, shown next to the action that caused them.
- * The empty state is the dropzone and the loading state is the progress bar, so this covers
- * the other two.
+ * The outcome of a tool's job (success, error or info), shown next to the action that caused
+ * it. The empty state is the dropzone and the loading state is the progress bar.
  * @returns {StatusPanel}
  */
 export function createStatusPanel() {
@@ -27,15 +28,15 @@ export function createStatusPanel() {
   element.hidden = true;
 
   /**
-   * @param {'success' | 'error'} type
+   * @param {'success' | 'error' | 'info'} type
    * @param {string} message
    * @param {StatusAction[]} actions
    */
   function show(type, message, actions) {
     const box = document.createElement('div');
     box.className = `status-panel__box status-panel__box--${type}`;
-    // A freshly inserted role="alert" is announced at once. Success goes through the polite
-    // #status region instead, so it doesn't cut off whatever the screen reader is saying.
+    // A freshly inserted role="alert" is announced at once. Other messages go through the
+    // polite #status region instead, so it doesn't cut off whatever the screen reader is saying.
     if (type === 'error') box.setAttribute('role', 'alert');
 
     const text = document.createElement('p');
@@ -59,13 +60,14 @@ export function createStatusPanel() {
 
     element.replaceChildren(box);
     element.hidden = false;
-    if (type === 'success') announce(message);
+    if (type !== 'error') announce(message);
   }
 
   return {
     element,
     showSuccess: (message, actions = []) => show('success', message, actions),
     showError: (message, actions = []) => show('error', message, actions),
+    showInfo: (message, actions = []) => show('info', message, actions),
     clear() {
       element.replaceChildren();
       element.hidden = true;

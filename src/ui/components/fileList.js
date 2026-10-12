@@ -14,9 +14,13 @@ import { moveItem } from './reorder.js';
  * @property {(files: File[]) => void} add
  * @property {() => File[]} getFiles
  * @property {() => void} clear
+ * @property {(index: number, message: string) => void} setError
+ *   Flags one file, e.g. the encrypted one that stopped a merge. The flag follows the file when
+ *   it is reordered and goes away when the file is removed or `clearErrors` is called.
+ * @property {() => void} clearErrors
  */
 
-/** @typedef {{ key: number, file: File }} Entry */
+/** @typedef {{ key: number, file: File, error?: string }} Entry */
 
 /**
  * An ordered list of files. Reordering works three ways: drag the handle with a mouse or
@@ -60,9 +64,9 @@ export function createFileList({ onChange, label = 'Selected files' } = {}) {
    * @returns {HTMLLIElement}
    */
   function renderItem(entry, index) {
-    const { file, key } = entry;
+    const { file, key, error } = entry;
     const item = document.createElement('li');
-    item.className = 'file-list__item';
+    item.className = error ? 'file-list__item has-error' : 'file-list__item';
     item.dataset.key = String(key);
 
     const handle = document.createElement('span');
@@ -76,6 +80,16 @@ export function createFileList({ onChange, label = 'Selected files' } = {}) {
     name.className = 'file-list__name';
     name.textContent = file.name; // textContent, never innerHTML: file names are user input
     name.title = file.name;
+
+    const details = document.createElement('span');
+    details.className = 'file-list__details';
+    details.append(name);
+    if (error) {
+      const message = document.createElement('span');
+      message.className = 'file-list__error';
+      message.textContent = error;
+      details.append(message);
+    }
 
     const size = document.createElement('span');
     size.className = 'file-list__size';
@@ -91,7 +105,7 @@ export function createFileList({ onChange, label = 'Selected files' } = {}) {
       button('remove', '✕', `Remove ${file.name}`, false, () => remove(key)),
     );
 
-    item.append(handle, name, size, actions);
+    item.append(handle, details, size, actions);
     return item;
   }
 
@@ -205,6 +219,17 @@ export function createFileList({ onChange, label = 'Selected files' } = {}) {
     getFiles: () => entries.map((entry) => entry.file),
     clear() {
       update([]);
+    },
+    setError(index, message) {
+      if (!entries[index]) return;
+      // The file set didn't change, so re-render without calling onChange.
+      entries = entries.with(index, { ...entries[index], error: message });
+      render(null);
+    },
+    clearErrors() {
+      if (!entries.some((entry) => entry.error)) return;
+      entries = entries.map(({ key, file }) => ({ key, file }));
+      render(null);
     },
   };
 }

@@ -130,9 +130,24 @@
   cursor: grabbing;
 }
 
-.file-list__name {
+.file-list__details {
+  display: flex;
   flex: 1;
+  flex-direction: column;
   min-width: 0;
+}
+
+.file-list__item.has-error {
+  border-color: var(--danger);
+  background: var(--danger-surface);
+}
+
+.file-list__error {
+  color: var(--danger);
+  font-size: 0.875rem;
+}
+
+.file-list__name {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -223,7 +238,43 @@
   }
 }
 
-/* Status panel (success / error states) */
+/* Tool actions, notes and status panel (success / error / info states) */
+
+.tool-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px var(--space);
+  margin: var(--space) 0;
+}
+
+.tool-actions__hint {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.note {
+  margin: var(--space) 0;
+  padding: 12px var(--space);
+  border-left: 4px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.note--warning {
+  border-left-color: var(--warning);
+  background: var(--warning-surface);
+}
+
+.note[hidden],
+.status-panel[hidden] {
+  display: none;
+}
 
 .status-panel {
   margin: var(--space) 0;
@@ -235,6 +286,10 @@
   border-left: 4px solid var(--accent);
   border-radius: 8px;
   background: var(--surface);
+}
+
+.status-panel__box--info {
+  border-left-color: var(--border);
 }
 
 .status-panel__box--error {
