@@ -55,6 +55,14 @@ const PAIRS = [
   ['accent', 'bg', 4.5],
   ['accent', 'surface', 4.5],
   ['on-accent', 'accent', 4.5],
+  ['on-accent', 'accent-hover', 4.5],
+  // Privacy badge, icon tiles, selected options and the dropzone while a file is dragged over.
+  ['text', 'accent-soft', 4.5],
+  ['text-muted', 'accent-soft', 4.5],
+  ['accent', 'accent-soft', 4.5],
+  ['focus', 'accent-soft', 3],
+  // Icon buttons on hover.
+  ['text', 'surface-sunken', 4.5],
   ['danger', 'surface', 4.5],
   ['danger', 'danger-surface', 4.5],
   ['focus', 'bg', 3],

@@ -1,5 +1,6 @@
 import './styles/main.css';
 import './styles/components.css';
+import { icon } from './ui/components/icons.js';
 import { createStatusPanel } from './ui/components/statusPanel.js';
 import { createToolScreen } from './ui/components/toolScreen.js';
 import { hrefFor, startRouter } from './ui/router.js';
@@ -11,6 +12,7 @@ import { hrefFor, startRouter } from './ui/router.js';
  * @property {string} id
  * @property {string} title
  * @property {string} description
+ * @property {Parameters<typeof icon>[0]} icon
  * @property {() => Promise<Mount>} load
  *   A dynamic import, so each tool's code (and pdf.js, for the thumbnail tools) is only
  *   downloaded when its screen opens.
@@ -20,24 +22,28 @@ import { hrefFor, startRouter } from './ui/router.js';
 const TOOLS = [
   {
     id: 'merge',
+    icon: 'merge',
     title: 'Merge',
     description: 'Combine several PDFs into one.',
     load: async () => (await import('./ui/tools/merge.js')).mountMerge,
   },
   {
     id: 'split',
+    icon: 'split',
     title: 'Split',
     description: 'Extract pages or split into several files.',
     load: async () => (await import('./ui/tools/split.js')).mountSplit,
   },
   {
     id: 'rotate',
+    icon: 'rotateRight',
     title: 'Rotate',
     description: 'Turn single pages or the whole document.',
     load: async () => (await import('./ui/tools/rotate.js')).mountRotate,
   },
   {
     id: 'compress',
+    icon: 'compress',
     title: 'Compress',
     description: 'Make a PDF smaller.',
     load: async () => (await import('./ui/tools/compress.js')).mountCompress,
@@ -95,9 +101,100 @@ function createToolCard(tool) {
   description.className = 'tool-card__description';
   description.textContent = tool.description;
 
-  link.append(title, description);
+  const body = document.createElement('span');
+  body.className = 'tool-card__body';
+  body.append(title, description);
+
+  const arrow = icon('arrowRight');
+  arrow.classList.add('tool-card__arrow');
+
+  link.append(iconTile(tool.icon), body, arrow);
   item.append(link);
   return item;
+}
+
+/**
+ * @param {Parameters<typeof icon>[0]} name
+ * @returns {HTMLSpanElement}
+ */
+function iconTile(name) {
+  const tile = document.createElement('span');
+  tile.className = 'icon-tile';
+  tile.append(icon(name));
+  return tile;
+}
+
+/** @returns {HTMLElement} */
+function createHero() {
+  const hero = document.createElement('section');
+  hero.className = 'hero';
+  hero.setAttribute('aria-labelledby', 'hero-title');
+  const title = document.createElement('h2');
+  title.id = 'hero-title';
+  title.className = 'hero__title';
+  title.textContent = 'Edit PDFs privately, right in your browser.';
+  const lead = document.createElement('p');
+  lead.className = 'hero__lead';
+  lead.textContent =
+    'Merge, split, rotate and compress. Nothing is uploaded: the work happens on your device, even offline.';
+  hero.append(title, lead);
+  return hero;
+}
+
+/** The three reasons to trust the app, each one something a user can check. */
+const PILLARS = [
+  {
+    icon: 'lock',
+    title: 'Nothing is uploaded',
+    text: 'There is no server. Your PDFs are read and written by your own browser.',
+  },
+  {
+    icon: 'offline',
+    title: 'Works offline',
+    text: 'After your first visit the app runs without any connection.',
+  },
+  {
+    icon: 'code',
+    title: 'Open and verifiable',
+    text: "The code is public, and your browser's developer tools show that no request is made.",
+    link: {
+      label: 'How to check it yourself',
+      href: 'https://github.com/Alexman39/PDF-Toolkit#verify-it-in-your-browser',
+    },
+  },
+];
+
+/** @returns {HTMLElement} */
+function createPillars() {
+  const section = document.createElement('section');
+  section.className = 'pillars';
+  section.setAttribute('aria-labelledby', 'pillars-title');
+  const heading = document.createElement('h2');
+  heading.id = 'pillars-title';
+  heading.className = 'section-title';
+  heading.textContent = 'How your files stay private';
+  const list = document.createElement('ul');
+  list.className = 'pillars__list';
+  for (const pillar of PILLARS) {
+    const item = document.createElement('li');
+    item.className = 'pillar';
+    const title = document.createElement('h3');
+    title.className = 'pillar__title';
+    title.textContent = pillar.title;
+    const text = document.createElement('p');
+    text.className = 'pillar__text';
+    text.textContent = pillar.text;
+    item.append(iconTile(/** @type {Parameters<typeof icon>[0]} */ (pillar.icon)), title, text);
+    if (pillar.link) {
+      const link = document.createElement('a');
+      link.href = pillar.link.href;
+      link.textContent = pillar.link.label;
+      item.append(link);
+    }
+    list.append(item);
+  }
+  section.append(heading, list);
+  return section;
 }
 
 /**
@@ -110,7 +207,7 @@ function renderHome(root, from) {
   list.className = 'tool-grid';
   list.setAttribute('aria-label', 'Tools');
   list.append(...TOOLS.map(createToolCard));
-  root.replaceChildren(list, createFaq());
+  root.replaceChildren(createHero(), list, createPillars(), createFaq());
   document.title = 'PDF Toolkit';
   if (from) list.querySelector(`[data-tool="${from}"]`)?.focus();
 }
@@ -126,9 +223,11 @@ function createFaq() {
   section.setAttribute('aria-labelledby', 'faq-title');
   const heading = document.createElement('h2');
   heading.id = 'faq-title';
-  heading.className = 'faq__title';
+  heading.className = 'section-title';
   heading.textContent = 'Questions';
-  section.append(heading);
+  const list = document.createElement('div');
+  list.className = 'faq__list';
+  section.append(heading, list);
   for (const { question, answer } of FAQ) {
     const details = document.createElement('details');
     details.className = 'faq__item';
@@ -137,7 +236,7 @@ function createFaq() {
     const text = document.createElement('p');
     text.textContent = answer;
     details.append(summary, text);
-    section.append(details);
+    list.append(details);
   }
   return section;
 }

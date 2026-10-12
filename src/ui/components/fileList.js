@@ -1,5 +1,6 @@
 import { formatBytes } from '../../lib/formatBytes.js';
 import { announce } from './announce.js';
+import { icon } from './icons.js';
 import { moveItem } from './reorder.js';
 
 /**
@@ -98,11 +99,11 @@ export function createFileList({ onChange, label = 'Selected files' } = {}) {
     const actions = document.createElement('span');
     actions.className = 'file-list__actions';
     actions.append(
-      button('up', '↑', `Move ${file.name} up`, index === 0, () => move(key, -1)),
-      button('down', '↓', `Move ${file.name} down`, index === entries.length - 1, () =>
+      button('up', 'arrowUp', `Move ${file.name} up`, index === 0, () => move(key, -1)),
+      button('down', 'arrowDown', `Move ${file.name} down`, index === entries.length - 1, () =>
         move(key, 1),
       ),
-      button('remove', '✕', `Remove ${file.name}`, false, () => remove(key)),
+      button('remove', 'close', `Remove ${file.name}`, false, () => remove(key)),
     );
 
     item.append(handle, details, size, actions);
@@ -111,17 +112,17 @@ export function createFileList({ onChange, label = 'Selected files' } = {}) {
 
   /**
    * @param {string} action
-   * @param {string} text
+   * @param {Parameters<typeof icon>[0]} iconName
    * @param {string} ariaLabel
    * @param {boolean} disabled
    * @param {() => void} onClick
    */
-  function button(action, text, ariaLabel, disabled, onClick) {
+  function button(action, iconName, ariaLabel, disabled, onClick) {
     const element = document.createElement('button');
     element.type = 'button';
     element.className = 'icon-button';
     element.dataset.action = action;
-    element.textContent = text;
+    element.append(icon(iconName));
     element.setAttribute('aria-label', ariaLabel);
     element.disabled = disabled;
     element.addEventListener('click', onClick);

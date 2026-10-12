@@ -8,18 +8,47 @@
 }
 
 .button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   min-height: 44px;
   padding: 0 calc(var(--space) * 1.25);
   border: 1px solid var(--accent);
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   background: var(--accent);
+  box-shadow: var(--shadow-sm);
   color: var(--on-accent);
   font-weight: 600;
 }
 
+.button:hover:not(:disabled) {
+  border-color: var(--accent-hover);
+  background: var(--accent-hover);
+}
+
 .button--secondary {
-  background: transparent;
+  background: var(--surface);
   color: var(--accent);
+}
+
+.button--secondary:hover:not(:disabled) {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .button,
+  .icon-button {
+    transition:
+      background-color 120ms var(--ease),
+      border-color 120ms var(--ease),
+      transform 120ms var(--ease);
+  }
+
+  .button:active:not(:disabled),
+  .icon-button:active:not(:disabled) {
+    transform: translateY(1px);
+  }
 }
 
 /* 44px is the minimum comfortable touch target (WCAG 2.5.5). */
@@ -29,8 +58,9 @@
   min-width: 44px;
   min-height: 44px;
   border: 1px solid transparent;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   background: transparent;
+  color: var(--text-muted);
 }
 
 .icon-button svg {
@@ -39,14 +69,16 @@
 }
 
 .button svg {
+  flex-shrink: 0;
   width: 18px;
   height: 18px;
   margin-right: 6px;
-  vertical-align: -3px;
 }
 
 .icon-button:hover:not(:disabled) {
   border-color: var(--border);
+  background: var(--surface-sunken);
+  color: var(--text);
 }
 
 .icon-button:disabled {
@@ -68,13 +100,32 @@
   align-items: center;
   justify-content: center;
   gap: 4px;
-  min-height: 160px;
+  min-height: 200px;
   padding: calc(var(--space) * 2);
-  border: 2px dashed var(--border);
-  border-radius: var(--radius);
+  border: 2px dashed var(--border-strong);
+  border-radius: var(--radius-lg);
   background: var(--surface);
   text-align: center;
   cursor: pointer;
+}
+
+.dropzone__icon {
+  width: 52px;
+  height: 52px;
+  margin-bottom: 8px;
+}
+
+.dropzone__icon svg {
+  width: 26px;
+  height: 26px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .dropzone__label {
+    transition:
+      background-color 150ms var(--ease),
+      border-color 150ms var(--ease);
+  }
 }
 
 .dropzone__title {
@@ -84,12 +135,15 @@
 
 .dropzone__action {
   color: var(--accent);
+  font-weight: 500;
   text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 .dropzone.is-active .dropzone__label,
 .dropzone__label:hover {
   border-color: var(--accent);
+  background: var(--accent-soft);
 }
 
 /* The real input is visually hidden, so show its focus on the visible label. */
@@ -113,10 +167,12 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  min-height: 60px;
   padding: 4px 4px 4px 0;
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--radius);
   background: var(--surface);
+  box-shadow: var(--shadow-sm);
 }
 
 .file-list__item.is-dragging {
@@ -160,6 +216,7 @@
 }
 
 .file-list__name {
+  font-weight: 500;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -195,8 +252,27 @@
 
 .progress__bar {
   width: 100%;
-  height: 12px;
+  height: 8px;
+  overflow: hidden;
+  border: 0;
+  border-radius: 999px;
+  background: var(--surface-sunken);
   accent-color: var(--accent);
+  appearance: none;
+}
+
+.progress__bar::-webkit-progress-bar {
+  background: var(--surface-sunken);
+}
+
+.progress__bar::-webkit-progress-value {
+  border-radius: 999px;
+  background: var(--accent);
+}
+
+.progress__bar::-moz-progress-bar {
+  border-radius: 999px;
+  background: var(--accent);
 }
 
 /* Toasts */
@@ -222,7 +298,7 @@
   padding: 4px 4px 4px var(--space);
   border: 1px solid var(--border);
   border-left: 4px solid var(--accent);
-  border-radius: 8px;
+  border-radius: var(--radius);
   background: var(--surface);
   box-shadow: var(--shadow);
   pointer-events: auto;
@@ -273,12 +349,14 @@
 .note {
   margin: var(--space) 0;
   padding: 12px var(--space);
-  border-left: 4px solid var(--border);
-  border-radius: 8px;
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--border-strong);
+  border-radius: var(--radius);
   background: var(--surface);
 }
 
 .note--warning {
+  border-color: transparent;
   border-left-color: var(--warning);
   background: var(--warning-surface);
 }
@@ -296,12 +374,13 @@
   padding: var(--space);
   border: 1px solid var(--border);
   border-left: 4px solid var(--accent);
-  border-radius: 8px;
+  border-radius: var(--radius);
   background: var(--surface);
+  box-shadow: var(--shadow-sm);
 }
 
 .status-panel__box--info {
-  border-left-color: var(--border);
+  border-left-color: var(--border-strong);
 }
 
 .status-panel__box--error {
@@ -311,6 +390,7 @@
 
 .status-panel__message {
   margin: 0;
+  font-weight: 500;
 }
 
 .status-panel__actions {
@@ -333,6 +413,11 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px var(--space);
+  padding: 12px 12px 12px var(--space);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
 }
 
 .workspace__file {
@@ -381,8 +466,9 @@
   gap: 4px;
   padding: 8px;
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--radius);
   background: var(--surface);
+  box-shadow: var(--shadow-sm);
 }
 
 /* Square, so a page turned 90° still fits without the grid jumping. */
@@ -392,9 +478,9 @@
   place-items: center;
   width: 100%;
   aspect-ratio: 1;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   /* Tinted, so white pages stand out from the white tile in the light theme. */
-  background: var(--bg);
+  background: var(--surface-sunken);
 }
 
 /* Absolutely positioned so max-width/max-height resolve against the square frame; as a grid
@@ -405,7 +491,9 @@
   margin: auto;
   max-width: calc(100% - 12px);
   max-height: calc(100% - 12px);
-  box-shadow: 0 1px 4px rgb(0 0 0 / 0.25);
+  box-shadow:
+    0 1px 2px rgb(0 0 0 / 0.12),
+    0 2px 8px rgb(0 0 0 / 0.08);
   /* Pages are white whatever the theme, like paper. */
   background: #fff;
 }
@@ -424,7 +512,7 @@
 
 @media (prefers-reduced-motion: no-preference) {
   .thumbnail__image {
-    transition: transform 150ms ease-out;
+    transition: transform 200ms var(--ease);
   }
 }
 
@@ -466,7 +554,7 @@
 }
 
 .mode-picker legend {
-  margin-bottom: 8px;
+  margin-bottom: 10px;
   padding: 0;
   font-weight: 600;
 }
@@ -477,15 +565,21 @@
   gap: 0 8px;
   align-items: center;
   min-height: 44px;
-  padding: 12px;
+  padding: 14px var(--space);
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--radius);
   background: var(--surface);
+  box-shadow: var(--shadow-sm);
   cursor: pointer;
+}
+
+.mode-picker__option:hover {
+  border-color: var(--border-strong);
 }
 
 .mode-picker__option:has(input:checked) {
   border-color: var(--accent);
+  background: var(--accent-soft);
   box-shadow: inset 0 0 0 1px var(--accent);
 }
 
@@ -530,7 +624,7 @@
   min-height: 44px;
   padding: 0 12px;
   border: 1px solid var(--border-strong);
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   background: var(--surface);
   color: inherit;
   /* 16px stops iOS Safari zooming in when the field gets focus. */
@@ -602,6 +696,7 @@
 
 .thumbnail.is-selected {
   border-color: var(--accent);
+  background: var(--accent-soft);
   box-shadow: inset 0 0 0 2px var(--accent);
 }
 

@@ -1,4 +1,5 @@
 import { hasPdfHeader } from '../../core/pdfHeader.js';
+import { icon } from './icons.js';
 
 /**
  * @typedef {object} RejectedFile
@@ -66,7 +67,10 @@ export function createDropzone({ onFiles, multiple = true, label }) {
   const action = document.createElement('span');
   action.className = 'dropzone__action';
   action.textContent = multiple ? 'or choose files' : 'or choose a file';
-  labelElement.append(title, action);
+  const tile = document.createElement('span');
+  tile.className = 'icon-tile dropzone__icon';
+  tile.append(icon('addFile'));
+  labelElement.append(tile, title, action);
   element.append(input, labelElement);
 
   async function accept(fileList) {

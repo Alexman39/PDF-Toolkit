@@ -112,6 +112,19 @@ Kickoff prompt:
 
 ---
 
+## Phase 8: Design refresh (1 day)
+Kickoff prompt:
+> Phase 8. Revamp the visual design: calm and trustworthy, teal accent, system fonts. New tokens,
+> restyled components on every screen, and a redesigned home (hero, tool icons, privacy points).
+> Keep tool screen structure so the e2e tests stay valid. Contrast must pass in both themes. Plan first.
+
+- [x] New tokens and component styles; contrast test covers the new pairs
+- [x] Home: header badge, hero, icon cards, "How your files stay private", FAQ card
+- [x] Screenshots regenerated, checked in light, dark and on a phone
+- [ ] Live on GitHub Pages
+
+---
+
 ## Later (out of scope)
 - PWA: web manifest + icons so the app is installable (offline already works via the Phase 6
   service worker)
@@ -124,4 +137,4 @@ Kickoff prompt:
   `BinaryDataFactory`; needs `'wasm-unsafe-eval'` in the CSP, so decide on the privacy trade-off first)
 
 ## Status
-Current phase: **done** (all phases shipped; see "Later" for next ideas)
+Current phase: **8**

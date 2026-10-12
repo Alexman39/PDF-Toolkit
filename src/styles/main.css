@@ -1,21 +1,31 @@
 :root {
-  --bg: #f7f7f8;
+  /* Warm off-white rather than grey: it reads calmer, and white cards lift off it. */
+  --bg: #f6f5f1;
   --surface: #ffffff;
-  --text: #1a1a1e;
-  --text-muted: #55565e;
-  --border: #d9d9de;
+  /* Wells inside a card, such as the frame behind a page thumbnail. */
+  --surface-sunken: #efede7;
+  --text: #1b1e20;
+  --text-muted: #585d62;
+  --border: #e2dfd8;
   /* The edge of a control that has no other outline (text inputs): 3:1 for WCAG 1.4.11. */
-  --border-strong: #85868f;
-  --accent: #2f5bd3;
-  --focus: #2f5bd3;
+  --border-strong: #868a8e;
+  --accent: #0f6e6a;
+  --accent-hover: #0b5956;
+  /* Tinted backgrounds: icon tiles, selected options, the privacy badge. */
+  --accent-soft: #e1f0ed;
+  --focus: #0f6e6a;
   --danger: #b3261e;
   --danger-surface: #fdecea;
   --warning: #8a5a00;
   --warning-surface: #fff4dc;
   --on-accent: #ffffff;
-  --shadow: 0 6px 24px rgb(0 0 0 / 0.15);
+  --shadow-sm: 0 1px 2px rgb(20 24 26 / 0.06), 0 1px 3px rgb(20 24 26 / 0.04);
+  --shadow: 0 4px 12px rgb(20 24 26 / 0.08), 0 12px 32px rgb(20 24 26 / 0.08);
+  --radius-sm: 8px;
   --radius: 12px;
+  --radius-lg: 16px;
   --space: 16px;
+  --ease: cubic-bezier(0.2, 0, 0, 1);
   font-family:
     system-ui,
     -apple-system,
@@ -24,24 +34,29 @@
     sans-serif;
   line-height: 1.5;
   color-scheme: light dark;
+  -webkit-font-smoothing: antialiased;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #121215;
-    --surface: #1c1c21;
-    --text: #ececf0;
-    --text-muted: #a4a5ad;
-    --border: #34343c;
-    --border-strong: #74757e;
-    --accent: #8aa8ff;
-    --focus: #8aa8ff;
+    --bg: #101315;
+    --surface: #191d20;
+    --surface-sunken: #14181a;
+    --text: #e8ecee;
+    --text-muted: #a1a9ae;
+    --border: #2b3236;
+    --border-strong: #727a80;
+    --accent: #5fd3c5;
+    --accent-hover: #86e0d5;
+    --accent-soft: #143330;
+    --focus: #5fd3c5;
     --danger: #ffb4ab;
     --danger-surface: #3a1d1b;
     --warning: #f0c060;
     --warning-surface: #33290f;
-    --on-accent: #10131c;
-    --shadow: 0 6px 24px rgb(0 0 0 / 0.5);
+    --on-accent: #062724;
+    --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.3);
+    --shadow: 0 4px 12px rgb(0 0 0 / 0.3), 0 12px 32px rgb(0 0 0 / 0.3);
   }
 }
 
@@ -57,6 +72,18 @@ body {
   color: var(--text);
 }
 
+h1,
+h2,
+h3 {
+  letter-spacing: -0.015em;
+  line-height: 1.2;
+}
+
+a {
+  color: var(--accent);
+  text-underline-offset: 3px;
+}
+
 .site-header,
 main {
   max-width: 960px;
@@ -64,19 +91,107 @@ main {
   padding: var(--space);
 }
 
-.site-header h1 {
+main {
+  padding-bottom: calc(var(--space) * 4);
+}
+
+/* Header: brand on the left, privacy badge on the right (below it on narrow screens). */
+
+.site-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px var(--space);
+  padding-top: calc(var(--space) * 1.25);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   margin: 0;
-  font-size: 1.75rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.brand__mark {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.brand__mark svg {
+  width: 22px;
+  height: 22px;
 }
 
 .privacy-note {
-  margin: 4px 0 0;
-  color: var(--text-muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.privacy-note svg {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
 }
 
 main:focus {
   outline: none;
 }
+
+/* Shared icon tile: the tinted square behind a tool or feature icon. */
+
+.icon-tile {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.icon-tile svg {
+  width: 22px;
+  height: 22px;
+}
+
+/* Home: hero */
+
+.hero {
+  margin: calc(var(--space) * 1.5) 0 calc(var(--space) * 2);
+}
+
+.hero__title {
+  max-width: 18em;
+  margin: 0;
+  font-size: clamp(1.75rem, 5vw, 2.5rem);
+  font-weight: 700;
+}
+
+.hero__lead {
+  max-width: 36em;
+  margin: 12px 0 0;
+  color: var(--text-muted);
+  font-size: 1.125rem;
+}
+
+/* Home: tool cards */
 
 .tool-grid {
   display: grid;
@@ -95,14 +210,16 @@ main:focus {
 
 .tool-card {
   display: flex;
-  flex-direction: column;
-  gap: 4px;
+  align-items: center;
+  gap: var(--space);
   width: 100%;
-  min-height: 120px;
-  padding: calc(var(--space) * 1.5);
+  height: 100%;
+  min-height: 112px;
+  padding: calc(var(--space) * 1.25);
   border: 1px solid var(--border);
-  border-radius: var(--radius);
+  border-radius: var(--radius-lg);
   background: var(--surface);
+  box-shadow: var(--shadow-sm);
   color: inherit;
   font: inherit;
   text-align: left;
@@ -110,8 +227,37 @@ main:focus {
   cursor: pointer;
 }
 
+.tool-card__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.tool-card__title {
+  font-size: 1.125rem;
+  font-weight: 650;
+}
+
+.tool-card__description {
+  color: var(--text-muted);
+}
+
+.tool-card__arrow {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  color: var(--text-muted);
+}
+
 .tool-card:hover {
   border-color: var(--accent);
+  box-shadow: var(--shadow);
+}
+
+.tool-card:hover .tool-card__arrow {
+  color: var(--accent);
 }
 
 .tool-card:focus-visible {
@@ -119,56 +265,123 @@ main:focus {
   outline-offset: 2px;
 }
 
-.tool-card__title {
-  font-size: 1.25rem;
-  font-weight: 600;
+@media (prefers-reduced-motion: no-preference) {
+  .tool-card,
+  .tool-card__arrow {
+    transition:
+      border-color 150ms var(--ease),
+      box-shadow 150ms var(--ease),
+      transform 150ms var(--ease);
+  }
+
+  .tool-card:hover {
+    transform: translateY(-2px);
+  }
+
+  .tool-card:hover .tool-card__arrow {
+    transform: translateX(3px);
+  }
 }
 
-.tool-card__description {
+/* Home: how it stays private */
+
+.section-title {
+  margin: 0 0 12px;
+  font-size: 1.25rem;
+}
+
+.pillars {
+  margin-top: calc(var(--space) * 3);
+}
+
+.pillars__list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 720px) {
+  .pillars__list {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.pillar {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pillar__title {
+  margin: 4px 0 0;
+  font-size: 1rem;
+}
+
+.pillar__text {
+  margin: 0;
   color: var(--text-muted);
 }
 
 /* Home: questions */
 
 .faq {
-  margin-top: calc(var(--space) * 2);
+  margin-top: calc(var(--space) * 3);
 }
 
-.faq__title {
-  margin: 0 0 8px;
-  font-size: 1.25rem;
+.faq__list {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
 }
 
-.faq__item {
-  border-bottom: 1px solid var(--border);
+.faq__item + .faq__item {
+  border-top: 1px solid var(--border);
 }
 
 .faq__item summary {
   display: flex;
   align-items: center;
-  min-height: 44px;
-  padding: 8px 0;
+  justify-content: space-between;
+  gap: var(--space);
+  min-height: 56px;
+  padding: 8px calc(var(--space) * 1.25);
+  border-radius: var(--radius-lg);
   font-weight: 600;
   cursor: pointer;
+  list-style: none;
 }
 
 .faq__item summary:focus-visible {
   outline: 3px solid var(--focus);
-  outline-offset: 2px;
+  outline-offset: -3px;
 }
 
-/* display: flex hides the native marker in some browsers, so draw our own. The `/ ''` gives it
-   empty alt text, so screen readers don't read the arrow as part of the question. */
-.faq__item summary::before {
-  content: '▸';
-  content: '▸' / '';
-  margin-right: 8px;
-  color: var(--text-muted);
+/* display: flex hides the native marker in some browsers, so draw our own chevron from two
+   borders: a glyph such as ⌄ is missing from many system fonts. */
+.faq__item summary::after {
+  content: '';
+  flex-shrink: 0;
+  width: 8px;
+  height: 8px;
+  margin: -4px 4px 0 0;
+  border-right: 2px solid var(--text-muted);
+  border-bottom: 2px solid var(--text-muted);
+  transform: rotate(45deg);
 }
 
-.faq__item[open] summary::before {
-  content: '▾';
-  content: '▾' / '';
+.faq__item[open] summary::after {
+  margin-top: 4px;
+  transform: rotate(-135deg);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .faq__item summary::after {
+    transition: transform 150ms var(--ease);
+  }
 }
 
 .faq__item summary::-webkit-details-marker {
@@ -176,7 +389,9 @@ main:focus {
 }
 
 .faq__item p {
-  margin: 0 0 var(--space);
+  max-width: 44em;
+  margin: 0;
+  padding: 0 calc(var(--space) * 1.25) var(--space);
   color: var(--text-muted);
 }
 
@@ -186,7 +401,17 @@ main:focus {
   display: inline-flex;
   align-items: center;
   min-height: 44px;
-  color: var(--accent);
+  margin-left: -12px;
+  padding: 0 12px;
+  border-radius: 999px;
+  color: var(--text-muted);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.back-link:hover {
+  background: var(--surface);
+  color: var(--text);
 }
 
 .back-link:focus-visible {
@@ -195,8 +420,8 @@ main:focus {
 }
 
 .tool-screen__title {
-  margin: 8px 0 0;
-  font-size: 1.5rem;
+  margin: 12px 0 0;
+  font-size: clamp(1.5rem, 4vw, 2rem);
 }
 
 .tool-screen__title:focus {
@@ -204,7 +429,8 @@ main:focus {
 }
 
 .tool-screen__description {
-  margin: 4px 0 var(--space);
+  max-width: 44em;
+  margin: 8px 0 calc(var(--space) * 1.5);
   color: var(--text-muted);
 }
 
