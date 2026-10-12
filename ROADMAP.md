@@ -30,7 +30,7 @@ Kickoff prompt:
 > against page count, clear errors for bad input) and `core/errors.js`, plus a `loadPdf(bytes)`
 > helper that checks the `%PDF-` header and detects encryption. Tests first. Plan first.
 
-- [ ] Range parser handles spaces, open ranges, duplicates, out-of-range values, garbage input
+- [x] Range parser handles spaces, open ranges, duplicates, out-of-range values, garbage input
 - [ ] Encrypted and corrupt fixtures produce the correct typed errors
 
 ---
