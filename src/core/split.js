@@ -105,16 +105,19 @@ function labelFor(pageIndexes) {
  * Splits one PDF into several according to `mode`.
  * @param {Uint8Array | ArrayBuffer} bytes
  * @param {SplitMode} mode
+ * @param {{ onProgress?: import('./merge.js').ProgressCallback }} [options]  Called once per part.
  * @returns {Promise<SplitOutput[]>}
  */
-export async function splitPdf(bytes, mode) {
+export async function splitPdf(bytes, mode, { onProgress } = {}) {
   const source = await loadPdf(bytes);
+  const parts = planSplit(source.getPageCount(), mode);
   const outputs = [];
-  for (const { label, pageIndexes } of planSplit(source.getPageCount(), mode)) {
+  for (const { label, pageIndexes } of parts) {
     const part = await PDFDocument.create();
     const pages = await part.copyPages(source, pageIndexes);
     for (const page of pages) part.addPage(page);
     outputs.push({ label, bytes: await part.save() });
+    onProgress?.(outputs.length, parts.length);
   }
   return outputs;
 }
