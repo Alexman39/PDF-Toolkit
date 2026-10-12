@@ -443,3 +443,158 @@
   display: flex;
   gap: 4px;
 }
+
+/* Form fields */
+
+.mode-picker {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  margin: var(--space) 0;
+  padding: 0;
+  border: 0;
+}
+
+@media (min-width: 600px) {
+  .mode-picker {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.mode-picker legend {
+  margin-bottom: 8px;
+  padding: 0;
+  font-weight: 600;
+}
+
+.mode-picker__option {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0 8px;
+  align-items: center;
+  min-height: 44px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  cursor: pointer;
+}
+
+.mode-picker__option:has(input:checked) {
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+
+.mode-picker__option:has(input:focus-visible) {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.mode-picker__option input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--accent);
+}
+
+.mode-picker__label {
+  font-weight: 600;
+}
+
+.mode-picker__help {
+  grid-column: 2;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+.mode-panel[hidden] {
+  display: none;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-width: 420px;
+}
+
+.field__label {
+  font-weight: 600;
+}
+
+.field__input {
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: inherit;
+  /* 16px stops iOS Safari zooming in when the field gets focus. */
+  font: inherit;
+  font-size: max(1rem, 16px);
+}
+
+.field__input:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 1px;
+}
+
+.field__input[aria-invalid='true'] {
+  border-color: var(--danger);
+}
+
+.field__help,
+.field__error {
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+.field__help {
+  color: var(--text-muted);
+}
+
+.field__error {
+  color: var(--danger);
+}
+
+.field__help[hidden],
+.field__error[hidden] {
+  display: none;
+}
+
+.checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  cursor: pointer;
+}
+
+.checkbox input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--accent);
+}
+
+.checkbox:has(input:focus-visible) {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.tool-actions--stacked {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+/* Page picking */
+
+.mode-panel .thumbnail__frame {
+  cursor: pointer;
+}
+
+.thumbnail.is-selected {
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 2px var(--accent);
+}

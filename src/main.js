@@ -29,9 +29,7 @@ const TOOLS = [
     id: 'split',
     title: 'Split',
     description: 'Extract pages or split into several files.',
-    load() {
-      return placeholder(this);
-    },
+    load: async () => (await import('./ui/tools/split.js')).mountSplit,
   },
   {
     id: 'rotate',
