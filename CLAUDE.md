@@ -141,3 +141,6 @@ npm run lint
 ## 10. Decisions log
 - 2026-10-12: pdf-lib for writing, pdf.js for rendering. Compression offered as lossless vs lossy, with an explicit warning that the lossy mode removes selectable text.
 - 2026-10-12: CSP meta tag is injected at build time only (Vite plugin), because dev hot reload needs a WebSocket. E2E tests run against `vite preview` of the production build. Prettier ignores `*.md` to protect CLAUDE.md and ROADMAP.md.
+- 2026-10-12: Core ops take 0-based page indexes; text ranges are parsed in the UI via pageRanges.js. Merge fails on any bad input (error carries `fileIndex`) rather than silently skipping it. Split "selected" = one file in ascending page order; `separate: true` gives one file per page.
+- 2026-10-12: Lossless compress removes unreachable objects by walking from the trailer instead of copying pages into a new doc, so outlines, forms and page labels survive.
+- 2026-10-12: ESLint limits src/core to globals shared by Node and browsers, enforcing "no DOM in core".

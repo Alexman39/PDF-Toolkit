@@ -42,8 +42,8 @@ Kickoff prompt:
 > bytes in, bytes out. Unit-test each against the fixtures. Check page counts, page order and
 > rotation values in the output. Explain how pdf-lib's `copyPages` works. Plan first.
 
-- [ ] All operations tested, including edge cases (single page, all pages, already-rotated pages)
-- [ ] No DOM usage anywhere in `src/core/`
+- [x] All operations tested, including edge cases (single page, all pages, already-rotated pages)
+- [x] No DOM usage anywhere in `src/core/`
 
 ---
 
@@ -119,4 +119,4 @@ Kickoff prompt:
 - Add page numbers or a watermark
 
 ## Status
-Current phase: **2**
+Current phase: **3**
