@@ -31,5 +31,10 @@ export default [
     files: ['*.config.js', 'scripts/**/*.js', 'tests/**/*.js'],
     languageOptions: { globals: { ...globals.node } },
   },
+  {
+    // Test-only page that runs in the browser, not Node.
+    files: ['tests/e2e/harness/**/*.js'],
+    languageOptions: { globals: { ...globals.browser } },
+  },
   prettier,
 ];

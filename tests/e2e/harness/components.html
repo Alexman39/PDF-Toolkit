@@ -1,0 +1,15 @@
+<!doctype html>
+<!-- Test-only page: mounts the shared components with the real worker. Served by the Vite dev
+     server for Playwright; never part of the production build. -->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Component harness</title>
+  </head>
+  <body>
+    <main id="app"></main>
+    <div id="status" class="visually-hidden" aria-live="polite"></div>
+    <script type="module" src="./harness.js"></script>
+  </body>
+</html>

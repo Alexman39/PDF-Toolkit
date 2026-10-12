@@ -51,6 +51,8 @@ const FIXTURES = {
     [{ size: PageSizes.A4 }, { size: PageSizes.Letter }, { size: [...PageSizes.A5].reverse() }],
   ],
   'rotated.pdf': ['Rotated page 2', [a4(), { size: PageSizes.A4, rotation: 90 }, a4()]],
+  // Big enough that worker jobs take visible time, for progress, cancel and freeze tests.
+  'hundred-fifty-pages.pdf': ['150 pages', Array.from({ length: 150 }, a4)],
 };
 
 for (const [fileName, [title, pages]] of Object.entries(FIXTURES)) {
