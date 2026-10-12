@@ -94,8 +94,8 @@ Kickoff prompt:
 > status, focus handling, contrast in both themes). Add the "files never leave your device" notice
 > and a short FAQ. Review the code for innerHTML with file names. List issues before fixing them.
 
-- [ ] Network test passes; app works offline after the first load
-- [ ] Usable on a phone with touch only
+- [x] Network test passes; app works offline after the first load
+- [x] Usable on a phone with touch only
 
 ---
 
@@ -113,7 +113,8 @@ Kickoff prompt:
 ---
 
 ## Later (out of scope)
-- PWA / installable offline app (service worker)
+- PWA: web manifest + icons so the app is installable (offline already works via the Phase 6
+  service worker)
 - Reorder or delete pages inside a single PDF
 - Images → PDF, PDF → images
 - Add page numbers or a watermark
@@ -123,4 +124,4 @@ Kickoff prompt:
   `BinaryDataFactory`; needs `'wasm-unsafe-eval'` in the CSP, so decide on the privacy trade-off first)
 
 ## Status
-Current phase: **6**
+Current phase: **7**
