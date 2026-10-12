@@ -222,3 +222,33 @@
     }
   }
 }
+
+/* Status panel (success / error states) */
+
+.status-panel {
+  margin: var(--space) 0;
+}
+
+.status-panel__box {
+  padding: var(--space);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.status-panel__box--error {
+  border-left-color: var(--danger);
+  background: var(--danger-surface);
+}
+
+.status-panel__message {
+  margin: 0;
+}
+
+.status-panel__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}

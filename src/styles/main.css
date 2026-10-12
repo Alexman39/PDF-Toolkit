@@ -99,6 +99,7 @@ main:focus {
   color: inherit;
   font: inherit;
   text-align: left;
+  text-decoration: none;
   cursor: pointer;
 }
 
@@ -117,6 +118,34 @@ main:focus {
 }
 
 .tool-card__description {
+  color: var(--text-muted);
+}
+
+/* Tool screens */
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--accent);
+}
+
+.back-link:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.tool-screen__title {
+  margin: 8px 0 0;
+  font-size: 1.5rem;
+}
+
+.tool-screen__title:focus {
+  outline: none;
+}
+
+.tool-screen__description {
+  margin: 4px 0 var(--space);
   color: var(--text-muted);
 }
 
