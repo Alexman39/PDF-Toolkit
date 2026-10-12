@@ -38,14 +38,15 @@ import { openDocument } from './openDocument.js';
  */
 
 /**
- * The flow shared by tools that work on one PDF (Rotate, Split): empty (dropzone) → opening
+ * The flow shared by tools that work on one PDF (Rotate, Split, Compress): empty (dropzone) → opening
  * (checked by pdf-lib in the worker) → workspace → running → success or error.
  * @param {HTMLElement} body
- * @param {{ onOpen: (context: OpenContext) => void, onClose?: () => void }} options
+ * @param {{ onOpen: (context: OpenContext) => void, onClose?: () => void, open?: import('./openDocument.js').OpenOptions }} options
  *   `onClose` runs before the workspace is emptied, so the tool can stop observers etc.
+ *   `open` is passed to openDocument.
  * @returns {DocumentTool}
  */
-export function createDocumentTool(body, { onOpen, onClose }) {
+export function createDocumentTool(body, { onOpen, onClose, open: openOptions }) {
   /** @type {AbortController | null} */
   let controller = null;
   /** @type {{ file: File, doc: OpenedDocument } | null} */
@@ -95,7 +96,7 @@ export function createDocumentTool(body, { onOpen, onClose }) {
     progress.start(`Opening ${file.name}…`);
     focusCancel();
     try {
-      const doc = await openDocument(file, signal);
+      const doc = await openDocument(file, signal, openOptions);
       current = { file, doc };
       fileName.textContent = `${file.name} · ${plural(doc.pageCount, 'page')} · ${formatBytes(file.size)}`;
       const warning = largeInputWarning([file]);

@@ -14,9 +14,6 @@ import { hrefFor, startRouter } from './ui/router.js';
  *   downloaded when its screen opens.
  */
 
-/** @param {{ title: string, description: string }} tool */
-const placeholder = async (tool) => (await import('./ui/tools/comingSoon.js')).comingSoon(tool);
-
 /** @type {Tool[]} */
 const TOOLS = [
   {
@@ -41,9 +38,7 @@ const TOOLS = [
     id: 'compress',
     title: 'Compress',
     description: 'Make a PDF smaller.',
-    load() {
-      return placeholder(this);
-    },
+    load: async () => (await import('./ui/tools/compress.js')).mountCompress,
   },
 ];
 
