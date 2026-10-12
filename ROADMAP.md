@@ -82,8 +82,8 @@ Kickoff prompt:
 > with the mode choice, the warning about losing selectable text, a before/after size display, and
 > "keep original" when the result is larger. Plan first.
 
-- [ ] Scanned fixture shrinks significantly; text-heavy fixture shows an honest result
-- [ ] The warning is shown before the lossy mode runs
+- [x] Scanned fixture shrinks significantly; text-heavy fixture shows an honest result
+- [x] The warning is shown before the lossy mode runs
 
 ---
 
@@ -119,6 +119,8 @@ Kickoff prompt:
 - Add page numbers or a watermark
 - Merge: choose a page range per file (§4.1 "optional"; deferred in Phase 4)
 - Keyboard: roving tabindex in thumbnail grids (each page's buttons are separate Tab stops today)
+- Compress: strong mode for JPEG 2000 / JBIG2 images (bundle pdf.js's wasm decoders via a custom
+  `BinaryDataFactory`; needs `'wasm-unsafe-eval'` in the CSP, so decide on the privacy trade-off first)
 
 ## Status
-Current phase: **5**
+Current phase: **6**
