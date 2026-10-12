@@ -1,4 +1,5 @@
 import './styles/main.css';
+import './styles/components.css';
 
 /** @typedef {{ id: string, title: string, description: string }} Tool */
 

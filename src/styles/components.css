@@ -1,0 +1,224 @@
+/* Shared components: buttons, dropzone, file list, progress, toasts. */
+
+.button,
+.icon-button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+.button {
+  min-height: 44px;
+  padding: 0 calc(var(--space) * 1.25);
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-weight: 600;
+}
+
+.button--secondary {
+  background: transparent;
+  color: var(--accent);
+}
+
+/* 44px is the minimum comfortable touch target (WCAG 2.5.5). */
+.icon-button {
+  display: inline-grid;
+  place-items: center;
+  min-width: 44px;
+  min-height: 44px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+}
+
+.icon-button:hover:not(:disabled) {
+  border-color: var(--border);
+}
+
+.icon-button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.button:focus-visible,
+.icon-button:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* Dropzone */
+
+.dropzone__label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-height: 160px;
+  padding: calc(var(--space) * 2);
+  border: 2px dashed var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  text-align: center;
+  cursor: pointer;
+}
+
+.dropzone__title {
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.dropzone__action {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+.dropzone.is-active .dropzone__label,
+.dropzone__label:hover {
+  border-color: var(--accent);
+}
+
+/* The real input is visually hidden, so show its focus on the visible label. */
+.dropzone:focus-within .dropzone__label {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* File list */
+
+.file-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: var(--space) 0;
+  padding: 0;
+  list-style: none;
+}
+
+.file-list__item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 4px 4px 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.file-list__item.is-dragging {
+  position: relative;
+  z-index: 1;
+  border-color: var(--accent);
+  box-shadow: var(--shadow);
+}
+
+.file-list__handle {
+  display: grid;
+  place-items: center;
+  align-self: stretch;
+  min-width: 44px;
+  color: var(--text-muted);
+  cursor: grab;
+  /* Lets a finger drag the row instead of scrolling the page. */
+  touch-action: none;
+  user-select: none;
+}
+
+.is-dragging .file-list__handle {
+  cursor: grabbing;
+}
+
+.file-list__name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-list__size {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  white-space: nowrap;
+}
+
+.file-list__actions {
+  display: flex;
+}
+
+/* Progress */
+
+.progress {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 4px var(--space);
+  margin: var(--space) 0;
+}
+
+.progress[hidden] {
+  display: none;
+}
+
+.progress__label {
+  grid-column: 1 / -1;
+}
+
+.progress__bar {
+  width: 100%;
+  height: 12px;
+  accent-color: var(--accent);
+}
+
+/* Toasts */
+
+.toasts {
+  position: fixed;
+  right: var(--space);
+  bottom: var(--space);
+  left: var(--space);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 420px;
+  padding: 4px 4px 4px var(--space);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent);
+  border-radius: 8px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  pointer-events: auto;
+}
+
+.toast--error {
+  border-left-color: var(--danger);
+  background: var(--danger-surface);
+}
+
+.toast__message {
+  margin: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .toast {
+    animation: toast-in 150ms ease-out;
+  }
+
+  @keyframes toast-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+  }
+}

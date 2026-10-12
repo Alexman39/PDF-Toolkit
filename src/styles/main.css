@@ -6,6 +6,10 @@
   --border: #d9d9de;
   --accent: #2f5bd3;
   --focus: #2f5bd3;
+  --danger: #b3261e;
+  --danger-surface: #fdecea;
+  --on-accent: #ffffff;
+  --shadow: 0 6px 24px rgb(0 0 0 / 0.15);
   --radius: 12px;
   --space: 16px;
   font-family:
@@ -27,6 +31,10 @@
     --border: #34343c;
     --accent: #8aa8ff;
     --focus: #8aa8ff;
+    --danger: #ffb4ab;
+    --danger-surface: #3a1d1b;
+    --on-accent: #10131c;
+    --shadow: 0 6px 24px rgb(0 0 0 / 0.5);
   }
 }
 
