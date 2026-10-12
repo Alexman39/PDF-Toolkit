@@ -1,7 +1,7 @@
 // Worker side of the protocol in messages.js: runs core operations and posts the outcome.
 // Free of `self` so Node tests can call it directly.
 
-import { optimisePdf } from '../core/compress.js';
+import { buildImagePdf, findUnsupportedImages, optimisePdf } from '../core/compress.js';
 import { loadPdf } from '../core/loadPdf.js';
 import { mergePdfs } from '../core/merge.js';
 import { rotatePages } from '../core/rotate.js';
@@ -26,9 +26,12 @@ const OPERATIONS = {
   // Run when a file is picked, so encrypted or corrupt files are reported before the user
   // sets anything up. pdf.js (thumbnails) opens some files pdf-lib refuses, e.g. ones with
   // only an owner password, so its opinion isn't enough.
-  async inspect({ bytes }) {
+  // `checkImages` is opt-in because it walks every object, which only Compress needs.
+  async inspect({ bytes, checkImages = false }) {
     const doc = await loadPdf(bytes);
-    return { pageCount: doc.getPageCount() };
+    const pageCount = doc.getPageCount();
+    if (!checkImages) return { pageCount };
+    return { pageCount, unsupportedImages: findUnsupportedImages(doc) };
   },
   async merge({ inputs }, onProgress) {
     return { bytes: await mergePdfs(inputs, { onProgress }) };
@@ -43,6 +46,11 @@ const OPERATIONS = {
   },
   async optimise({ bytes, options }) {
     return { bytes: await optimisePdf(bytes, options) };
+  },
+  // Strong compression when the pages had to be rendered on the main thread: only the
+  // assembly runs here.
+  async buildImagePdf({ pages }, onProgress) {
+    return { bytes: await buildImagePdf(pages, { onProgress }) };
   },
 };
 

@@ -35,6 +35,9 @@ export default defineConfig({
   // GitHub Pages serves the site from /<repo-name>/.
   base: '/PDF-Toolkit/',
   plugins: [cspMetaTag()],
+  // ES module workers can load code with dynamic import(), so pdf.js (~1 MB) is only fetched
+  // when the worker first renders pages, not for every merge. The default ('iife') can't split.
+  worker: { format: 'es' },
   test: {
     include: ['tests/unit/**/*.test.js'],
     environment: 'node',

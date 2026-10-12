@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { runJob } from '../../src/workers/runJob.js';
-import { fixture, labels, pageTexts, readPages } from './helpers/pdf.js';
+import { fixture, labels, pageTexts, readPages, scannedJpeg } from './helpers/pdf.js';
 
 /**
  * Runs a job and records everything it posts, the way the worker would send it.
@@ -21,6 +21,22 @@ describe('runJob', () => {
     expect(posted).toEqual([
       { message: { id: 7, type: 'result', result: { pageCount: 10 } }, transfer: [] },
     ]);
+  });
+
+  it('lists images strong compression cannot render when asked', async () => {
+    const posted = await run('inspect', {
+      bytes: fixture('jpeg2000-image.pdf'),
+      checkImages: true,
+    });
+    expect(posted.at(-1).message.result).toEqual({
+      pageCount: 1,
+      unsupportedImages: ['JPXDecode'],
+    });
+  });
+
+  it('reports no unsupported images for a plain scan', async () => {
+    const posted = await run('inspect', { bytes: fixture('scanned.pdf'), checkImages: true });
+    expect(posted.at(-1).message.result.unsupportedImages).toEqual([]);
   });
 
   it('reports an encrypted file from inspect as a typed error', async () => {
@@ -77,6 +93,21 @@ describe('runJob', () => {
   it('optimises', async () => {
     const posted = await run('optimise', { bytes: fixture('three-pages.pdf'), options: {} });
     expect(await pageTexts(posted.at(-1).message.result.bytes)).toEqual(labels(1, 3));
+  });
+
+  it('builds a PDF from page images and reports progress per page', async () => {
+    const jpeg = await scannedJpeg();
+    const posted = await run('buildImagePdf', {
+      pages: [
+        { jpeg, width: 595, height: 842 },
+        { jpeg, width: 595, height: 842 },
+      ],
+    });
+    const progress = posted.filter((p) => p.message.type === 'progress');
+    expect(progress.map((p) => p.message.done)).toEqual([1, 2]);
+    const { message, transfer } = posted.at(-1);
+    expect(await readPages(message.result.bytes)).toHaveLength(2);
+    expect(transfer).toEqual([message.result.bytes.buffer]);
   });
 
   it('accepts ArrayBuffers, as transferred from the main thread', async () => {

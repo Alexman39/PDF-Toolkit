@@ -19,7 +19,9 @@ import {
   TooLargeError,
 } from '../core/errors.js';
 
-/** @typedef {'inspect' | 'merge' | 'split' | 'rotate' | 'optimise'} PdfOperation */
+/**
+ * @typedef {'inspect' | 'merge' | 'split' | 'rotate' | 'optimise' | 'buildImagePdf'} PdfOperation
+ */
 
 /**
  * @typedef {object} JobMessage
