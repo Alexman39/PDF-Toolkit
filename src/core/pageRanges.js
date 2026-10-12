@@ -81,3 +81,22 @@ export function rangesToPageIndexes(ranges) {
   }
   return [...indexes];
 }
+
+/**
+ * Guards core operations against bad indexes from the caller. These are programming errors
+ * (the UI should never send them), so they throw plain errors rather than PageRangeError.
+ * @param {number[]} pageIndexes  Zero-based page indexes.
+ * @param {number} pageCount
+ * @returns {void}
+ * @throws {RangeError} When the list is empty or an index is not a page of the document.
+ */
+export function assertPageIndexes(pageIndexes, pageCount) {
+  if (!Array.isArray(pageIndexes) || pageIndexes.length === 0) {
+    throw new RangeError('Select at least one page');
+  }
+  for (const index of pageIndexes) {
+    if (!Number.isInteger(index) || index < 0 || index >= pageCount) {
+      throw new RangeError(`Page index ${index} is outside 0-${pageCount - 1}`);
+    }
+  }
+}
