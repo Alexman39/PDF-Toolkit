@@ -1,6 +1,7 @@
 // Reads output PDFs with pdf.js rather than pdf-lib, so tests also prove that a second,
 // independent parser can open what pdf-lib wrote.
 import { readFileSync } from 'node:fs';
+import { PDFDocument, PDFName, PDFRawStream } from 'pdf-lib';
 import { getDocument } from 'pdfjs-dist/legacy/build/pdf.mjs';
 
 /**
@@ -9,6 +10,24 @@ import { getDocument } from 'pdfjs-dist/legacy/build/pdf.mjs';
  */
 export function fixture(name) {
   return new Uint8Array(readFileSync(new URL(`../../fixtures/${name}`, import.meta.url)));
+}
+
+/**
+ * A real JPEG file: a DCTDecode image stream's bytes are a complete JPEG, so the scanned
+ * fixture supplies one without checking a separate image into the repo.
+ * @returns {Promise<Uint8Array>}
+ */
+export async function scannedJpeg() {
+  const doc = await PDFDocument.load(fixture('scanned.pdf'));
+  const stream = doc.context
+    .enumerateIndirectObjects()
+    .map(([, object]) => object)
+    .find(
+      (object) =>
+        object instanceof PDFRawStream &&
+        object.dict.get(PDFName.of('Filter')) === PDFName.of('DCTDecode'),
+    );
+  return stream.contents;
 }
 
 /**

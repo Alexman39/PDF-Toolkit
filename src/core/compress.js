@@ -1,5 +1,7 @@
-import { PDFArray, PDFDict, PDFName, PDFRef, PDFStream } from 'pdf-lib';
+import { PDFArray, PDFDict, PDFDocument, PDFName, PDFRef, PDFStream } from 'pdf-lib';
 import { loadPdf } from './loadPdf.js';
+
+/** @typedef {import('./merge.js').ProgressCallback} ProgressCallback */
 
 /**
  * @typedef {object} OptimiseOptions
@@ -9,7 +11,7 @@ import { loadPdf } from './loadPdf.js';
 /**
  * Lossless compression: drops objects nothing refers to and packs the rest into compressed
  * object streams. Page content is untouched, so text stays selectable. Gains are usually
- * small; the lossy mode (Phase 5) is what shrinks scans.
+ * small; the strong mode (`buildImagePdf`) is what shrinks scans.
  * @param {Uint8Array | ArrayBuffer} bytes
  * @param {OptimiseOptions} [options]
  * @returns {Promise<Uint8Array>}
@@ -55,4 +57,61 @@ function removeUnreachableObjects(context) {
   for (const [ref] of context.enumerateIndirectObjects()) {
     if (!reachable.has(ref)) context.delete(ref);
   }
+}
+
+/**
+ * @typedef {object} ImagePage
+ * @property {Uint8Array} jpeg  A rendered page.
+ * @property {number} width     Page width in points, as the page was shown (rotation applied).
+ * @property {number} height    Page height in points.
+ */
+
+/**
+ * The second half of strong (lossy) compression: one JPEG per page becomes one page each.
+ * Rendering happens elsewhere because it needs a canvas, which core can't touch. The images
+ * already show any rotation, so pages come out upright with no /Rotate.
+ * @param {ImagePage[]} pages
+ * @param {{ onProgress?: ProgressCallback }} [options]
+ * @returns {Promise<Uint8Array>}
+ */
+export async function buildImagePdf(pages, { onProgress } = {}) {
+  if (pages.length === 0) throw new RangeError('buildImagePdf needs at least one page');
+  // No metadata at all: the old title or author could otherwise be the only text left, and
+  // pdf-lib's default "Producer" and dates would reveal when and how the file was made.
+  const doc = await PDFDocument.create({ updateMetadata: false });
+  for (const [index, { jpeg, width, height }] of pages.entries()) {
+    // embedJpg copies the bytes into the PDF as a DCTDecode stream: no second lossy step.
+    const image = await doc.embedJpg(jpeg);
+    doc.addPage([width, height]).drawImage(image, { x: 0, y: 0, width, height });
+    onProgress?.(index + 1, pages.length);
+  }
+  return doc.save({ useObjectStreams: true });
+}
+
+// pdf.js decodes these with wasm modules it would have to fetch, which the CSP forbids, so it
+// leaves such images out. Rendering those pages would silently produce blank output.
+const UNSUPPORTED_FILTERS = new Map(
+  ['JPXDecode', 'JBIG2Decode'].map((name) => [PDFName.of(name), name]),
+);
+
+/**
+ * Lists the image formats in this PDF that strong compression can't render.
+ * @param {PDFDocument} doc
+ * @returns {string[]}  Filter names, e.g. `['JPXDecode']`; empty when every image is fine.
+ */
+export function findUnsupportedImages(doc) {
+  const { context } = doc;
+  const found = new Set();
+  for (const [, object] of context.enumerateIndirectObjects()) {
+    if (!(object instanceof PDFStream)) continue;
+    if (object.dict.get(PDFName.of('Subtype')) !== PDFName.of('Image')) continue;
+    const filter = object.dict.lookup(PDFName.of('Filter'));
+    // A filter chain is applied in order, so the unsupported codec can be anywhere in it.
+    const filters = filter instanceof PDFArray ? filter.asArray() : [filter];
+    for (const name of filters) {
+      const unsupported = UNSUPPORTED_FILTERS.get(context.lookup(name));
+      if (unsupported) found.add(unsupported);
+    }
+  }
+  return [...found].sort();
 }

@@ -1,8 +1,9 @@
 import { PDFDocument, PDFName, PDFDict } from 'pdf-lib';
 import { describe, expect, it } from 'vitest';
 import { EncryptedPdfError } from '../../src/core/errors.js';
-import { optimisePdf } from '../../src/core/compress.js';
-import { fixture, readPages } from './helpers/pdf.js';
+import { buildImagePdf, findUnsupportedImages, optimisePdf } from '../../src/core/compress.js';
+import { loadPdf } from '../../src/core/loadPdf.js';
+import { fixture, readPages, scannedJpeg } from './helpers/pdf.js';
 
 const MARKER = PDFName.of('TestOrphanMarker');
 
@@ -70,5 +71,74 @@ describe('optimisePdf', () => {
 
   it('rejects an encrypted PDF', async () => {
     await expect(optimisePdf(fixture('encrypted.pdf'))).rejects.toBeInstanceOf(EncryptedPdfError);
+  });
+});
+
+describe('buildImagePdf', () => {
+  it('makes one page per image at the given size, upright and without text', async () => {
+    const jpeg = await scannedJpeg();
+    const output = await buildImagePdf([
+      { jpeg, width: 595, height: 842 },
+      { jpeg, width: 842, height: 595 },
+    ]);
+    expect(await readPages(output)).toEqual([
+      { text: undefined, rotation: 0, size: [595, 842] },
+      { text: undefined, rotation: 0, size: [842, 595] },
+    ]);
+  });
+
+  it('embeds the JPEG bytes as they are, without re-encoding', async () => {
+    const jpeg = await scannedJpeg();
+    const doc = await PDFDocument.load(await buildImagePdf([{ jpeg, width: 100, height: 100 }]));
+    const images = doc.context
+      .enumerateIndirectObjects()
+      .map(([, object]) => object)
+      .filter((object) => object.dict?.get(PDFName.of('Subtype')) === PDFName.of('Image'));
+    expect(images).toHaveLength(1);
+    expect(images[0].contents).toEqual(jpeg);
+  });
+
+  it('reports progress once per page', async () => {
+    const jpeg = await scannedJpeg();
+    const calls = [];
+    await buildImagePdf(
+      Array.from({ length: 3 }, () => ({ jpeg, width: 100, height: 100 })),
+      { onProgress: (done, total) => calls.push([done, total]) },
+    );
+    expect(calls).toEqual([
+      [1, 3],
+      [2, 3],
+      [3, 3],
+    ]);
+  });
+
+  it('refuses an empty page list', async () => {
+    await expect(buildImagePdf([])).rejects.toBeInstanceOf(RangeError);
+  });
+});
+
+describe('findUnsupportedImages', () => {
+  it.each(['three-pages.pdf', 'scanned.pdf'])('finds nothing in %s', async (name) => {
+    expect(findUnsupportedImages(await loadPdf(fixture(name)))).toEqual([]);
+  });
+
+  it('finds JPEG 2000 images', async () => {
+    expect(findUnsupportedImages(await loadPdf(fixture('jpeg2000-image.pdf')))).toEqual([
+      'JPXDecode',
+    ]);
+  });
+
+  it('finds JBIG2 images inside a filter chain, once per filter', async () => {
+    const doc = await PDFDocument.create();
+    doc.addPage();
+    for (let i = 0; i < 2; i++) {
+      const image = doc.context.stream(new Uint8Array(4), {
+        Type: 'XObject',
+        Subtype: 'Image',
+        Filter: ['FlateDecode', 'JBIG2Decode'],
+      });
+      doc.context.register(image);
+    }
+    expect(findUnsupportedImages(doc)).toEqual(['JBIG2Decode']);
   });
 });

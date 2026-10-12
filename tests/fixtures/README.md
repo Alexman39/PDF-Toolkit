@@ -11,6 +11,7 @@ Every page shows "Page N" so tests can verify page order.
 | `ten-pages.pdf`   | 10    | A4                                          |
 | `mixed-sizes.pdf` | 3     | A4 portrait, US Letter, A5 landscape        |
 | `rotated.pdf`     | 3     | A4; page 2 already has `/Rotate 90`         |
+| `jpeg2000-image.pdf` | 1 | A4; has a placeholder JPEG 2000 image (never drawn) |
 | `hundred-fifty-pages.pdf` | 150 | A4; for progress, cancel and UI-freeze tests |
 
 ## Added manually
