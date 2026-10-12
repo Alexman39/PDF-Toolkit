@@ -68,9 +68,9 @@ Kickoff prompt:
 > downloads multiple outputs as a zip via fflate. Every screen has empty/loading/success/error
 > states. One screen at a time. Plan first.
 
-- [ ] Full flow works in the browser for all three tools
-- [ ] Thumbnails load lazily, so a 200-page PDF doesn't freeze the page
-- [ ] Encrypted and corrupt files show friendly messages
+- [x] Full flow works in the browser for all three tools
+- [x] Thumbnails load lazily, so a 200-page PDF doesn't freeze the page
+- [x] Encrypted and corrupt files show friendly messages
 
 ---
 
@@ -117,6 +117,8 @@ Kickoff prompt:
 - Reorder or delete pages inside a single PDF
 - Images → PDF, PDF → images
 - Add page numbers or a watermark
+- Merge: choose a page range per file (§4.1 "optional"; deferred in Phase 4)
+- Keyboard: roving tabindex in thumbnail grids (each page's buttons are separate Tab stops today)
 
 ## Status
-Current phase: **4**
+Current phase: **5**
