@@ -20,7 +20,8 @@ import {
 } from '../core/errors.js';
 
 /**
- * @typedef {'inspect' | 'merge' | 'split' | 'rotate' | 'optimise' | 'buildImagePdf'} PdfOperation
+ * @typedef {'inspect' | 'merge' | 'split' | 'rotate' | 'optimise' | 'compressStrong'
+ *   | 'buildImagePdf'} PdfOperation
  */
 
 /**

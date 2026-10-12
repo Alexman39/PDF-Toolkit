@@ -1,14 +1,6 @@
 // Page previews rendered with pdf.js. This module is only imported by screens that show
 // thumbnails, so pdf.js (~1 MB with its worker) never loads on the home page or in Merge.
-//
-// The legacy build polyfills the very new APIs the modern build relies on
-// (e.g. Map.prototype.getOrInsertComputed), which many phones don't have yet.
-import * as pdfjs from 'pdfjs-dist/legacy/build/pdf.mjs';
-// `?url` makes Vite copy the worker into dist/ and hand us its URL: pdf.js loads it from our own
-// origin, never from a CDN.
-import workerUrl from 'pdfjs-dist/legacy/build/pdf.worker.min.mjs?url';
-
-pdfjs.GlobalWorkerOptions.workerSrc = workerUrl;
+import { pdfjs } from './pdfjs.js';
 
 // Small JPEGs are ~10–20 KB per page; keeping a full canvas per page instead would hold
 // about 0.5 MB of pixels each, ~100 MB for a 200-page document.

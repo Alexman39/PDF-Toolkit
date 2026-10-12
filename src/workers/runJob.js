@@ -7,6 +7,7 @@ import { mergePdfs } from '../core/merge.js';
 import { rotatePages } from '../core/rotate.js';
 import { splitPdf } from '../core/split.js';
 import { packageSplitOutputs } from '../core/zip.js';
+import { canRenderInWorker } from './canRenderInWorker.js';
 import { collectTransferables, serializeError } from './messages.js';
 
 /** @typedef {import('./messages.js').PdfOperation} PdfOperation */
@@ -26,12 +27,17 @@ const OPERATIONS = {
   // Run when a file is picked, so encrypted or corrupt files are reported before the user
   // sets anything up. pdf.js (thumbnails) opens some files pdf-lib refuses, e.g. ones with
   // only an owner password, so its opinion isn't enough.
-  // `checkImages` is opt-in because it walks every object, which only Compress needs.
-  async inspect({ bytes, checkImages = false }) {
+  // `forCompress` is opt-in because it walks every object, which only Compress needs. It also
+  // says where strong compression can render, so the screen needs no extra round trip.
+  async inspect({ bytes, forCompress = false }) {
     const doc = await loadPdf(bytes);
     const pageCount = doc.getPageCount();
-    if (!checkImages) return { pageCount };
-    return { pageCount, unsupportedImages: findUnsupportedImages(doc) };
+    if (!forCompress) return { pageCount };
+    return {
+      pageCount,
+      unsupportedImages: findUnsupportedImages(doc),
+      canRenderInWorker: canRenderInWorker(),
+    };
   },
   async merge({ inputs }, onProgress) {
     return { bytes: await mergePdfs(inputs, { onProgress }) };
@@ -46,6 +52,12 @@ const OPERATIONS = {
   },
   async optimise({ bytes, options }) {
     return { bytes: await optimisePdf(bytes, options) };
+  },
+  // Progress counts rendered pages only: rendering takes nearly all the time.
+  async compressStrong({ bytes, dpi, quality }, onProgress) {
+    const { rasteriseInWorker } = await import('./renderInWorker.js');
+    const pages = await rasteriseInWorker(bytes, { dpi, quality, onProgress });
+    return { bytes: await buildImagePdf(pages) };
   },
   // Strong compression when the pages had to be rendered on the main thread: only the
   // assembly runs here.

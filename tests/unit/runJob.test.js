@@ -23,19 +23,21 @@ describe('runJob', () => {
     ]);
   });
 
-  it('lists images strong compression cannot render when asked', async () => {
+  it('reports what strong compression needs to know when asked', async () => {
     const posted = await run('inspect', {
       bytes: fixture('jpeg2000-image.pdf'),
-      checkImages: true,
+      forCompress: true,
     });
     expect(posted.at(-1).message.result).toEqual({
       pageCount: 1,
       unsupportedImages: ['JPXDecode'],
+      // Node has no OffscreenCanvas; browsers are covered by the E2E tests.
+      canRenderInWorker: false,
     });
   });
 
   it('reports no unsupported images for a plain scan', async () => {
-    const posted = await run('inspect', { bytes: fixture('scanned.pdf'), checkImages: true });
+    const posted = await run('inspect', { bytes: fixture('scanned.pdf'), forCompress: true });
     expect(posted.at(-1).message.result.unsupportedImages).toEqual([]);
   });
 
