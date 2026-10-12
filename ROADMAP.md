@@ -106,9 +106,9 @@ Kickoff prompt:
 > (and how anyone can verify it in DevTools → Network), a Mermaid diagram of UI → worker → core,
 > screenshots and setup steps.
 
-- [ ] Live on GitHub Pages
-- [ ] Green CI badge in README
-- [ ] Added to portfolio site
+- [x] Live on GitHub Pages
+- [x] Green CI badge in README
+- [x] Added to portfolio site
 
 ---
 
@@ -124,4 +124,4 @@ Kickoff prompt:
   `BinaryDataFactory`; needs `'wasm-unsafe-eval'` in the CSP, so decide on the privacy trade-off first)
 
 ## Status
-Current phase: **7**
+Current phase: **done** (all phases shipped; see "Later" for next ideas)
