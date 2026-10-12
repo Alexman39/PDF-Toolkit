@@ -144,3 +144,7 @@ npm run lint
 - 2026-10-12: Core ops take 0-based page indexes; text ranges are parsed in the UI via pageRanges.js. Merge fails on any bad input (error carries `fileIndex`) rather than silently skipping it. Split "selected" = one file in ascending page order; `separate: true` gives one file per page.
 - 2026-10-12: Lossless compress removes unreachable objects by walking from the trailer instead of copying pages into a new doc, so outlines, forms and page labels survive.
 - 2026-10-12: ESLint limits src/core to globals shared by Node and browsers, enforcing "no DOM in core".
+- 2026-10-12: Cancel = `worker.terminate()` + respawn on next job, not a cancel message: pdf-lib can't be interrupted mid-save, and terminating frees the worker's memory at once. Aborting cancels every job in that worker.
+- 2026-10-12: Worker protocol split into `workers/messages.js` (shared, imports only errors.js) and `workers/runJob.js` (op table). Importing core from the client put pdf-lib in the main bundle (424 KB → 3.8 KB after the split).
+- 2026-10-12: Typed errors cross the worker boundary as `{ name, code, message, fileIndex… }` and are rebuilt by `code`, since structured clone drops custom fields. `mergePdfs`/`splitPdf` take an optional `onProgress` callback; rotate/optimise show indeterminate progress.
+- 2026-10-12: Component E2E tests run on a harness page (`tests/e2e/harness/`) served by the Vite dev server, so it never ships in `dist/`. File-list drag uses Pointer Events (HTML5 DnD doesn't fire on touch).

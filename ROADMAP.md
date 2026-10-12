@@ -55,9 +55,9 @@ Kickoff prompt:
 > with drag-and-drop reorder plus keyboard buttons, progress bar, toast, and download helper with
 > object-URL cleanup. Plan first.
 
-- [ ] UI stays responsive while a 100+ page file is processed
-- [ ] Cancelling works and frees memory
-- [ ] Components are keyboard-accessible
+- [x] UI stays responsive while a 100+ page file is processed
+- [x] Cancelling works and frees memory
+- [x] Components are keyboard-accessible
 
 ---
 
@@ -119,4 +119,4 @@ Kickoff prompt:
 - Add page numbers or a watermark
 
 ## Status
-Current phase: **3**
+Current phase: **4**
