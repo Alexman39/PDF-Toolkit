@@ -12,7 +12,8 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "lint": "eslint . && prettier --check .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "fixtures": "node scripts/generate-fixtures.js"
   },
   "dependencies": {
     "fflate": "^0.8.3",
