@@ -31,7 +31,7 @@ Kickoff prompt:
 > helper that checks the `%PDF-` header and detects encryption. Tests first. Plan first.
 
 - [x] Range parser handles spaces, open ranges, duplicates, out-of-range values, garbage input
-- [ ] Encrypted and corrupt fixtures produce the correct typed errors
+- [x] Encrypted and corrupt fixtures produce the correct typed errors
 
 ---
 
@@ -119,4 +119,4 @@ Kickoff prompt:
 - Add page numbers or a watermark
 
 ## Status
-Current phase: **1**
+Current phase: **2**
